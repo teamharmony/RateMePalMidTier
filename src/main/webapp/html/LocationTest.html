@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body onload="bodyLoaded()">
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="../js/authenticationProxy.js"></script>
+<script>
+		var host = "http://localhost:8080/ResourceMgmt";
+		
+		function bodyLoaded() {
+			var authentication = new AuthenticationProxy(host, "meetMePal");
+			authentication.loginWithPassword("himesh", "himesh");
+		}
+		
+		
+		
+		//Demo of getAPI
+		function updateLocation() {
+			var lat = $("#lat").val(), lon = $("#lon").val();
+			$.ajax( {
+			      	url: host.concat("/resources/updateLocation?access_token=" + window.bearerToken),
+			      	type: 'PUT',
+			      	data: {"latitude": lat, "longitude": lon}
+		    	}).done(function() { 
+					console.log("location updated successfully.")
+		    	});
+			
+		}	
+		
+		function searchByLocation(){
+			var lat1 = $("#lat1").val(), lon1 = $("#lon1").val(),lat2 = $("#lat2").val(), lon2 = $("#lon2").val();
+			$.ajax( {
+		      	url: host.concat("/search/location"),
+		      	type: 'GET',
+		      	data: {"latitude1": lat1, "latitude2": lat2, "longitude1":lon1, "longitude2": lon2}
+	    	}).done(function(user) { 
+				console.log("the user found is " + user.name);
+	    	});
+					
+			
+		}
+		
+
+</script>
+
+<br/><br/><br/>
+<span>Enter floating point numbers</span><br/>
+latitude: <input id="lat" type="text"></input><br/>
+longitude: <input id="lon" type="text"></input><br/>
+<button onclick="updateLocation()">update Location</button>
+<br/><br/><br/><br/>
+latitude1: <input id="lat1"  type="text"></input><br/>
+longitude1: <input id="lon1"  type="text"></input><br/>
+latitude2: <input id="lat2"  type="text"></input><br/>
+longitude2: <input  id="lon2" type="text"></input><br/>
+<button onclick="searchByLocation()">SearchByLocation</button>
+
+
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script>
+		
+		
+		
+		
+		$(document).ready(formSubmission);
+		
+		function formSubmission() {
+			var host = "http://localhost:8080/ResourceMgmt/resources";
+			
+			
+			$( '#createUser' )
+			  .submit( function( e ) {
+				  //var str = $("#createUser").serialize();
+				  //var photo_file = new FormData( $("#createUser")[0] );
+				  
+				  
+				  
+			    $.ajax( {
+			      url: host,
+			      type: 'POST',
+			      data: new FormData( $("#createUser")[0] ),
+			      processData: false,
+			      contentType: false
+			    } );
+			    e.preventDefault();
+			  } );
+			
+		}	
+	
+		function 	handleVisibility(oEvent) {
+			var cb = oEvent.target;
+			cb.value = cb.checked ? 1: 0;
+		}
+		
+</script>
+
+
+
+
+<form id="createUser" action="#" >
+	FirstName <input type="text" name="name"></input><br/>
+	Contact <input type="text" name="contact"></input><br/>
+	userName <input type="text" name="username"></input><br/>
+	password <input type="text" name="password"></input><br/>
+	Email <input type="text" name="email"></input><br/>
+	Skills <input type="text" name="skills"></input><br/>
+	ProfilePic <input id="profilePc" type="file" name="profilePic"></input><br/>
+	Visible<input type="checkbox" name="visible" onchange="handleVisibility(event)"></input><br/>
+	<input type="submit"/>
+</form>
+
+</body>
+</html>

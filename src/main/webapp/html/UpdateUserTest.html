@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body onload="bodyLoaded()">
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="../js/authenticationProxy.js"></script>
+<script>
+		var host = "http://localhost:8080/ResourceMgmt";
+		
+		function bodyLoaded() {
+			var authentication = new AuthenticationProxy(host, "meetMePal");
+			authentication.loginWithPassword("shan_kakode", "passw0rd");
+		}
+		
+		
+		$(document).ready(formSubmission);
+		
+		function formSubmission() {
+			$( '#updateUser' )
+			  .submit( function( e ) {
+			    $.ajax( {
+			      url: host.concat("/resources/update?access_token=" + window.bearerToken),
+			      type: 'POST',
+			      data: new FormData( $("#updateUser")[0] ),
+			      processData: false,
+			      contentType: false
+			    } );
+			    e.preventDefault();
+			  } );
+		}	
+
+		
+		//Demo of getAPI
+		function getUserDetailsProxy() {
+			$.ajax( {
+			      	url: host.concat("/resources/fetch?access_token=" + window.bearerToken),
+			      	type: 'GET'
+		    	}).done(function(o) { 
+					$("#name").val(o.name);
+					$("#contact").val(o.contact);
+					$("#email").val(o.email);
+					$("#skills").val(o.skills);
+					if(o.visible === 1)
+						$("#visible")[0].checked = 1;
+					else
+						$("#visible")[0].checked = 0;
+		    	});
+			
+			
+		}	
+		
+		function 	handleVisibility(oEvent) {
+			var cb = oEvent.target;
+			cb.value = cb.checked ? 1: 0;
+		}
+
+</script>
+
+
+<span>Get the data first before updating it and in this sample profilePic is only fetched not updated.</span>
+<span>The resource to fetch the Image is GET method "/resources/{username}/profilePic" </span>
+<br/>
+<button onclick="getUserDetailsProxy()">GetUser</button>
+
+<form id="updateUser" action="#" >
+	FirstName <input type="text" id="name" name="name"></input><br/>
+	Contact <input type="text" id="contact"  name="contact"></input><br/>
+	Email <input type="text" id="email" name="email"></input><br/>
+	Skills <input type="text" id="skills" name="skills"></input><br/>
+	ProfilePic <input type="file" name="profilePic"></input><br/>
+	Visible<input id="visible"  type="checkbox" name="visible" onchange="handleVisibility(event)"></input><br/>
+	<input type="submit"/>
+</form>
+
+
+
+</body>
+</html>

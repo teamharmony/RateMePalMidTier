@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<import resource="resourceMgmt-security.xml"/>
+	
+	<bean id="meetingService" class="prj.resources.mgmt.services.MeetingServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="messageService" class="prj.resources.mgmt.services.MessageServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="feedbackService" class="prj.resources.mgmt.services.FeedbackServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="registrationService" class="prj.resources.mgmt.services.RegistrationServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<bean id="validationService" class="prj.resources.mgmt.services.ValidationServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	 <!-- <bean id="pwdGen" class="prj.resources.mgmt.services.RandomGenerator"></bean>-->   
+	 
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+        <property name="username" value="feedback4mmp@gmail.com"/>
+        <property name="password" value="teamharmony"/>
+	 
+		<property name="javaMailProperties">
+		   <props>
+	       	      <prop key="mail.smtp.auth">true</prop>
+	       	      <prop key="mail.smtp.starttls.enable">true</prop>
+	       	   </props>
+		</property>
+	</bean>
+
+	<bean id="mailNotifier" class="prj.resources.mgmt.services.MailNotifier">
+		<property name="mailSender" ref="mailSender"></property>
+	</bean>
+	
+	<bean id="pwdGenerator" class="prj.resources.mgmt.services.RandomGenerator"/>
+
+</beans>

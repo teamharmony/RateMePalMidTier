@@ -1,0 +1,311 @@
+create database resourcemgmt;
+use resourcemgmt;
+
+
+drop table users;
+create table users (
+	username varchar(12) not null,
+	password varchar(32) not null,
+	resetpwd smallint default 0,
+	primary key(username)
+	) engine=InnoDB;
+
+drop table authorities;
+create table authorities (
+	username varchar(12) not null,
+	authority varchar(10) not null,
+	foreign key(username) references users(username)
+	) engine=InnoDB;
+
+drop table user_details;
+create table user_details(
+	name varchar(30) not null,
+	username varchar(12) not null,
+	visible smallint default 1,
+	email varchar(60) not null,
+	contact varchar(15) not null,
+	profilePic longblob,
+	latitude double,
+	longitude double,
+	primary key(email),
+	foreign key(username) references users(username)
+	) engine=InnoDB;
+
+
+CREATE UNIQUE INDEX search_by_name
+ON user_details ( name);
+
+
+
+
+drop table feedback;
+create table feedback(
+	id mediumint not null auto_increment,
+	fromUserName varchar(12) not null,
+	subject varchar(35) not null,
+	message varchar(500) not null,
+	primary key(id),
+	foreign key(fromUserName) references users(username)
+);
+
+
+drop procedure createFeedbackRequest;		
+delimiter //
+create procedure createFeedbackRequest(
+								IN _fromUserName varchar(12), 
+								IN _subject varchar(35),
+								IN _message varchar(500)
+							)
+	begin
+		insert into feedback(fromUserName, subject, message)
+		values(_fromUserName, _subject, _message);
+	end//
+delimiter ;
+
+drop procedure updateLocation;		
+delimiter //
+create procedure updateLocation(IN _username varchar(12), IN _latitude double, IN _longitude double)
+	begin
+		update user_details
+			set latitude = _latitude, longitude = _longitude
+				where username = _username;
+	end//
+delimiter ;
+
+
+drop procedure isUserNameOccupied;		
+delimiter //
+create procedure isUserNameOccupied(IN _username varchar(12), OUT _occupied smallint )
+	begin
+		select count(*) into _occupied from users where username = _username; 
+	end//
+delimiter ;
+
+
+drop procedure isEmailOccupied;		
+delimiter //
+create procedure isEmailOccupied(IN _email varchar(60), OUT _occupied smallint )
+	begin
+		select count(*) into _occupied from user_details where email = _email; 
+	end//
+delimiter ;
+
+
+drop procedure findUserByName;		
+delimiter //
+create procedure findUserByName(IN _name varchar(30))
+	begin
+		select ud.name ,
+			ud.username,
+			ud.email,
+			ud.contact,
+			ud.latitude,
+			ud.longitude
+		from user_details as ud
+		 where 	lower(ud.name) like concat('%',  lower(_name) , '%')  and
+		 ud.visible != 0;
+	end//
+delimiter ;
+
+
+
+
+drop procedure findUserByLocation;		
+delimiter //
+create procedure findUserByLocation(IN _latitude1 double, IN _latitude2 double, 
+		IN _longitude1 double, IN _longitude2 double)
+	begin
+		select ud.name ,
+			ud.username,
+			ud.email,
+			ud.contact,
+			ud.latitude,
+			ud.longitude		
+		from user_details as ud 
+		where 
+		(ud.latitude between _latitude1 and _latitude2) and
+		(ud.longitude between _longitude1 and _longitude2) and
+		ud.visible != 0;
+	end//
+delimiter ;
+
+
+
+
+drop procedure findUserBySkill;		
+delimiter //
+create procedure findUserBySkill(IN skills varchar(120))
+begin
+	DECLARE strLen    INT DEFAULT 0;
+	DECLARE SubStrLen INT DEFAULT 0;
+
+	IF skills IS NULL THEN
+    	SET skills = '';
+  	END IF;
+
+
+	DROP TEMPORARY TABLE IF EXISTS tblResults;
+  	CREATE TEMPORARY TABLE IF NOT EXISTS tblResults  (
+		name varchar(30) not null,
+		username varchar(12) not null,
+		email varchar(60) not null,
+		skill varchar(120) not null,
+		contact varchar(15) not null,
+		latitude double,
+		longitude double
+  	);
+  
+
+	do_this:
+  		LOOP
+    		SET strLen = CHAR_LENGTH(skills);
+
+			Insert into tblResults
+			select ud.name, ud.username, ud.email, ud.skill, ud.contact, ud.latitude, ud.longitude  
+			from user_details as ud
+			where 
+			lower(ud.skill) like concat('%', lower(SUBSTRING_INDEX(skills, ',', 1)) , '%') and
+			ud.visible != 0;
+			
+    	    SET SubStrLen = CHAR_LENGTH(SUBSTRING_INDEX(skills, ',', 1)) + 2;
+    		SET skills = MID(skills, SubStrLen, strLen);
+
+    		IF skills = '' THEN
+      			LEAVE do_this;
+   		 	END IF;
+  
+  		END LOOP do_this;
+
+	select DISTINCT * from tblResults;
+		
+end//
+delimiter ;
+
+
+
+
+drop procedure registerUser;		
+delimiter //
+create procedure registerUser(IN _username varchar(12), 
+						IN _pwd varchar(32),
+						IN _authority varchar(10),
+						IN _name varchar(30),
+						IN _visible smallint,
+						IN _email varchar(60), 
+						IN _contact varchar(15),
+						IN _profilePic longblob						
+						)
+begin 
+
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		rollback;
+		resignal;
+	END;
+	start transaction;
+		insert into users(username, password) values(_username, md5(_pwd));
+		insert into authorities (username, authority) values(_username, _authority);
+		insert into user_details (username, name, email, contact, visible) 
+			values(_username, _name, _email, _contact, _visible);
+			
+		if _profilePic is not null then
+			update user_details
+				set profilePic = _profilePic where username = _username;
+		end if; 
+	commit;
+
+
+end//
+delimiter ;
+
+
+
+drop procedure updateUser;
+delimiter //
+create procedure updateUser(IN _username varchar(12), 
+						IN _name varchar(30),
+						IN _email varchar(60),
+						IN _contact varchar(15),
+						IN _profilePic longblob,
+						IN _visible smallint)
+begin 
+			
+		if _name is not null then
+			update user_details
+				set name = _name where username = _username;
+		end if;
+		
+		if _email is not null then
+			update user_details
+				set email = _email where username = _username;
+		end if;
+		
+		if _visible is not null then
+			update user_details
+				set visible = _visible where username = _username;
+		end if;
+			
+		if _contact is not null then
+			update user_details
+				set contact = _contact where username = _username;
+		end if;
+			
+		if _profilePic is not null then
+			update user_details
+				set profilePic = _profilePic where username = _username;
+		end if;
+					
+end//
+delimiter ;
+
+drop procedure updatePassword;
+delimiter //
+create procedure updatePassword(IN _username varchar(12), 
+						IN _pwd varchar(32), IN _resetpwd smallint)
+begin 
+	update users
+		set password = md5(_pwd), resetpwd = _resetpwd
+			where username = _username;
+end//
+delimiter ;
+
+
+drop procedure getUserDetails;
+delimiter //
+create procedure getUserDetails(IN _username varchar(12),
+						OUT _name varchar(30),
+						OUT _email varchar(60),
+						OUT _contact varchar(15),
+						OUT _visible smallint
+)
+begin 
+	select name,  email, contact, visible  into  
+		_name, _email, _contact, _visible
+			from user_details
+			where username = _username;
+end//
+delimiter ;
+
+
+
+drop procedure getUserProfilePic;
+delimiter //
+create procedure getUserProfilePic(IN _username varchar(12),
+						OUT _profilePic longblob
+)
+begin 
+	select profilePic into _profilePic
+		from user_details
+			where username = _username;
+end//
+delimiter ;
+
+drop procedure isPwdReset;
+delimiter //
+create procedure isPwdReset(IN _username varchar(12), OUT _resetpwd smallint)
+begin 
+		select resetpwd into _resetpwd from users
+			where username = _username;
+end//
+delimiter ;
+

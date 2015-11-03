@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body onload="bodyLoaded()">
+<script type="text/javascript" src="../js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="../js/authenticationProxy.js"></script>
+
+<script>
+		var host = "http://resourcemgmt.cfapps.io/resources";
+		
+		function bodyLoaded() {
+			var authentication = new AuthenticationProxy(host, "meetMePal");
+			authentication.loginWithPassword("lok", "lok");
+		}
+		
+		//Demo of getAPI
+		function getUserDetailsProxy() {
+			$.ajax( {
+			      	url: host.concat("/resources/lok?access_token=" + window.bearerToken),
+			      	type: 'GET'
+		    	}).done(function(o) { alert(o.fName);});
+		}	
+
+</script>
+
+<button onclick="getUserDetailsProxy()">Get User</button>
+</body>
+</html>
