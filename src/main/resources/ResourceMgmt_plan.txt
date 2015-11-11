@@ -1,6 +1,5 @@
-create database resourcemgmt;
-use resourcemgmt;
-
+create database rateMePal;
+use rateMePal;
 
 drop table users;
 create table users (
@@ -36,31 +35,64 @@ CREATE UNIQUE INDEX search_by_name
 ON user_details ( name);
 
 
+drop table paramType;
+create table paramType (
+	id smallint not null,
+	text varchar(50),
+	primary key(id)
+)engine=InnoDB;
+
+insert into paramType values (1, 'Personal'), (2, 'Professional');
 
 
-drop table feedback;
-create table feedback(
-	id mediumint not null auto_increment,
-	fromUserName varchar(12) not null,
-	subject varchar(35) not null,
-	message varchar(500) not null,
+drop table parameters;
+create table parameters (
+	id smallint not null auto_increment,
+	type smallint,
+	creator varchar(12),
+	name varchar(100),
+	text varchar(1000),
 	primary key(id),
-	foreign key(fromUserName) references users(username)
-);
+	foreign key(creator) references users(username),
+	foreign key(type) references paramType(id)
+)engine=InnoDB;
 
 
-drop procedure createFeedbackRequest;		
+drop procedure addParameter;		
 delimiter //
-create procedure createFeedbackRequest(
-								IN _fromUserName varchar(12), 
-								IN _subject varchar(35),
-								IN _message varchar(500)
-							)
+create procedure addParameter(IN _type smallint,
+														IN _name varchar(100),					
+														IN _creator varchar(12),
+														IN _text varchar(1000))
 	begin
-		insert into feedback(fromUserName, subject, message)
-		values(_fromUserName, _subject, _message);
+		insert into parameters (type, creator, name, text)
+		values (_type, _creator, _name, _text); 
 	end//
 delimiter ;
+
+
+
+drop procedure removeParameter;		
+delimiter //
+create procedure removeParameter(IN _id smallint, IN _creator varchar(12))
+	begin
+		delete from parameters where
+		id = _id and creator = _creator; 
+	end//
+delimiter ;
+
+
+drop procedure showParameters;		
+delimiter //
+create procedure showParameters(IN _creator varchar(12))
+	begin
+		select * from parameters
+		where creator = _creator; 
+	end//
+delimiter ;
+
+
+
 
 drop procedure updateLocation;		
 delimiter //
