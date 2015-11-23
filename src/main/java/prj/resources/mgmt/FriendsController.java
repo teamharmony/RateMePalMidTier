@@ -22,12 +22,12 @@ import prj.resources.mgmt.domain.Parameter;
 import prj.resources.mgmt.domain.ParameterType;
 import prj.resources.mgmt.services.ParameterService;
 
-@RequestMapping("/parameters")
+@RequestMapping("/friends")
 @Controller
-public class ParameterController {
+public class FriendsController {
 
 	@Autowired
-	private ParameterService parameterService;
+	private FriendsService friendsService;
 
 	@ExceptionHandler()
 	public ResponseEntity<ClientErrorInfo> errorHandle(Exception e) {
@@ -46,7 +46,7 @@ public class ParameterController {
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST)
-	public void addParameter(@RequestBody MultiValueMap<String,String> body, 
+	public void addFriend(@RequestBody MultiValueMap<String,String> body, 
 			HttpServletRequest request) throws ResourceError {
 		String creator = request.getParameter("username");
 		String text = body.getFirst("text");
@@ -64,19 +64,40 @@ public class ParameterController {
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
-	public List<Parameter> showParameters(HttpServletRequest request) throws ResourceError {
+	public List<Parameter> showFriends(HttpServletRequest request) throws ResourceError {
 		return parameterService.showParameters(request.getParameter("username"));
 	}
 
 
 	@ResponseBody
-	@RequestMapping(value="/{parameterId}", method = RequestMethod.DELETE)
-	public void removeParameter(@PathVariable Integer parameterId, HttpServletRequest request) throws ResourceError {
-		Parameter p = new Parameter();
-		p.setCreator(request.getParameter("username"));
-		p.setId(parameterId);
-		parameterService.removeParameter(p);
-
+	@RequestMapping(value="/notInvited" method = RequestMethod.GET)
+	public List<Parameter> showNonFriends(HttpServletRequest request) throws ResourceError {
+		return parameterService.showParameters(request.getParameter("username"));
 	}
+
+
+	@ResponseBody
+	@RequestMapping(value="/invited" method = RequestMethod.GET)
+	public List<Parameter> showInvitedFriends(HttpServletRequest request) throws ResourceError {
+		//return parameterService.showParameters(request.getParameter("username"));
+	}
+
+
+	@ResponseBody
+	@RequestMapping(value="/pending" method = RequestMethod.GET)
+	public List<Parameter> showPendingFriends(HttpServletRequest request) throws ResourceError {
+		//return parameterService.showParameters(request.getParameter("username"));
+	}
+
 	
+	@ResponseBody
+	@RequestMapping(value="/updateStatus", method = RequestMethod.PUT)
+	public void updateFriendStatus(@RequestBody MultiValueMap<String,String> body, 
+			HttpServletRequest request) throws ResourceError {
+		String username = request.getParameter("username");
+		String friendname = body.getFirst("friendname");
+		String status = body.getFirst("status");
+		
+		//TODO - Service
+	}	
 }

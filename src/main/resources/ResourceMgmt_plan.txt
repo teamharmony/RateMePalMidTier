@@ -35,6 +35,140 @@ CREATE UNIQUE INDEX search_by_name
 ON user_details ( name);
 
 
+
+drop table friends;
+create table friends (
+	username varchar(12) not null,
+	friendname varchar(12) not null,
+	status smallint,
+	primary key(username, friendname),
+	unique key(friendname, username),
+	foreign key(username) references users(username),
+	foreign key(friendname) references users(username)
+)engine=InnoDB;
+
+
+
+drop procedure addFriend;		
+delimiter //
+create procedure addFriend(
+								IN _user1 varchar(12), 
+								IN _user2 varchar(12)
+							)
+	begin
+
+		delete from friends
+		where username = _user1 AND friendname = _user2;
+
+		delete from friends
+		where username = _user2 AND friendname = _user1;
+
+		insert into friends
+		values (_user1, _user2, 1);
+
+
+		insert into friends
+		values (_user2, _user1, 4);
+
+	end//
+delimiter ;
+
+drop procedure updateFriendStatus;		
+delimiter //
+create procedure updateFriendStatus(
+								IN _user1 varchar(12), 
+								IN _user2 varchar(12),
+								IN _status smallint
+							)
+	begin
+
+		if _status = 2 then
+			update friends 
+			set status = 2
+			where ((username = _user1 AND friendname = _user2 )OR (username =  _user2 AND friendname = _user1));
+		elseif _status = 3 then
+			update friends 
+			set status = 3
+			where ((username = _user1 AND friendname = _user2 )OR (username =  _user2 AND friendname = _user1));
+		end if;	
+
+	end// 
+delimiter ;
+
+
+drop procedure showFriends;		
+delimiter //
+create procedure showFriends(IN _user1 varchar(12))
+	begin
+	    SELECT u.name, f.friendname
+	    FROM friends f 
+	    INNER JOIN user_details u 
+	    ON ( u.username = f.friendname )
+	    WHERE f.username = _user1 AND f.status = 2;
+	end//
+delimiter ;
+
+
+drop procedure showInvitedFriends;		
+delimiter //
+create procedure showInvitedFriends(IN _user1 varchar(12))
+	begin
+	    SELECT u.name, f.friendname
+	    FROM friends f 
+	    INNER JOIN user_details u 
+	    ON ( u.username = f.friendname )
+	    WHERE f.username = _user1 AND f.status = 1;
+	end//
+delimiter ;
+
+
+drop procedure showPendingFriends;		
+delimiter //
+create procedure showPendingFriends(IN _user1 varchar(12))
+	begin
+	    SELECT u.name, f.friendname
+	    FROM friends f 
+	    INNER JOIN user_details u 
+	    ON ( u.username = f.friendname )
+	    WHERE f.username = _user1 AND f.status = 4;
+	end//
+delimiter ;
+
+
+
+drop procedure showNonFriends;		
+delimiter //
+create procedure showNonFriends(IN _user1 varchar(12))
+	begin
+		DROP TEMPORARY TABLE IF EXISTS tblResults;
+	  	CREATE TEMPORARY TABLE IF NOT EXISTS tblResults  (
+			username varchar(12) not null,
+			displayName varchar(30) not null,
+			status smallint default 0
+	  	);
+
+		INSERT into tblResults
+		SELECT   u.username, ud.name, f.status
+		from users u
+		INNER JOIN user_details ud
+		ON(u.username = ud.username)
+		LEFT JOIN friends f
+		ON(u.username = f.friendname AND f.username = _user1)
+		WHERE u.username != _user1
+		GROUP BY u.username;
+					
+		SELECT DISTINCT * from tblResults
+		WHERE username NOT IN (
+			    SELECT f.friendname
+			    FROM friends f 
+			    INNER JOIN user_details u 
+			    ON ( u.username = f.friendname )
+			    WHERE f.username = _user1 AND f.status = 2);
+
+	end//
+delimiter ;
+
+
 drop table paramType;
 create table paramType (
 	id smallint not null,
