@@ -6,18 +6,14 @@
 
 	<import resource="resourceMgmt-security.xml"/>
 	
-	<bean id="meetingService" class="prj.resources.mgmt.services.MeetingServiceImpl">
+	<bean id="friendsService" class="prj.resources.mgmt.services.FriendsServiceImpl">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
-	
 	
 	<bean id="parameterService" class="prj.resources.mgmt.services.ParameterServiceImpl">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	
-	<bean id="messageService" class="prj.resources.mgmt.services.MessageServiceImpl">
-		<property name="dataSource" ref="dataSource"></property>
-	</bean>
 	
 	<bean id="feedbackService" class="prj.resources.mgmt.services.FeedbackServiceImpl">
 		<property name="dataSource" ref="dataSource"></property>

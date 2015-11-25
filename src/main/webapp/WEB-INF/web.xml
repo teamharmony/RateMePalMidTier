@@ -48,9 +48,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/resources/update</url-pattern>
 		<url-pattern>/password/reset</url-pattern>
 		<url-pattern>/logout</url-pattern>
-		<url-pattern>/messages/*</url-pattern>
-		<url-pattern>/meetings/*</url-pattern>
 		<url-pattern>/parameters/*</url-pattern>
+		<url-pattern>/friends/*</url-pattern>
 		<url-pattern>/feedback/*</url-pattern>
 	</filter-mapping>
 

@@ -6,8 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import prj.resources.queues.MeetingQueue;
-import prj.resources.queues.MessageQueue;
+import prj.resources.queues.FriendsQueue;
 
 public class ResponseMutationInterceptor extends HandlerInterceptorAdapter {
 	
@@ -18,18 +17,20 @@ public class ResponseMutationInterceptor extends HandlerInterceptorAdapter {
 		
 		String user = request.getParameter("username");
 		
-		if (!(request.getServletPath().indexOf("messages") != -1 && request
-				.getMethod() == "POST")
-				&& MessageQueue.removeMessage(user)) {
-			response.addHeader("MessageAvailable", "yes");
-		}
-
-		if (!(request.getServletPath().indexOf("meetings") != -1 && request
-				.getMethod() == "POST")
-				&& MeetingQueue.removeMeeting(user)) {
-			response.addHeader("MeetingAvailable", "yes");
+		if(FriendsQueue.hasStatus(user, "1")) {	
+			response.addHeader("invitations", "yes");
 		}
 		
+		if(FriendsQueue.hasStatus(user, "2")) {	
+			response.addHeader("acceptance", "yes");
+		}
+
+		if(FriendsQueue.hasStatus(user, "3")) {	
+			response.addHeader("cancellations", "yes");
+		}
+		
+		FriendsQueue.removeMessage(user);
+			
 		super.postHandle(request, response, handler, modelAndView);
 		
 	}

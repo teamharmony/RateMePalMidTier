@@ -18,6 +18,14 @@ public enum ParameterType {
 			}
 			return ParameterType.Personal;
 		}
+		
+		public String toString() {
+			switch(this.type) {
+			case 1: return "1";
+			case 2: return "2";
+			}
+			return "1";			
+		}
 
 
 }

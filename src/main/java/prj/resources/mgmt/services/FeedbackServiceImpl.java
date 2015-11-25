@@ -15,7 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 import prj.resources.exception.ResourceError;
 import prj.resources.mgmt.domain.Feedback;
-import prj.resources.queues.MessageQueue;
+
 
 public class FeedbackServiceImpl implements FeedbackService {
 	
