@@ -81,7 +81,7 @@ public class ParameterServiceImpl implements ParameterService {
 					.withProcedureName("addParameter");
 
 			Map<String, Object> inputData = new HashMap<String, Object>();
-			inputData.put("_type", parameter.getType());
+			inputData.put("_type", parameter.getType().toString());
 			inputData.put("_creator", parameter.getCreator());
 			inputData.put("_text", parameter.getText());
 			inputData.put("_name", parameter.getName());

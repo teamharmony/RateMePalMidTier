@@ -87,7 +87,7 @@ public interface RegistrationService {
 	 * @return
 	 * @throws ResourceError
 	 */
-	public List<User> findUserByLocation(double latitude1, double latitude2, double longitude1, double longitude2) throws ResourceError;
+	//public List<User> findUserByLocation(double latitude1, double latitude2, double longitude1, double longitude2) throws ResourceError;
 	
 	/**
 	 * update a location

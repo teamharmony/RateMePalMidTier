@@ -64,22 +64,4 @@ public class SearchController {
 		return registrationService.findUserByName(searchString); 
 	}
 
-	
-	/**
-	 * find by either skill.
-	 * @param key
-	 * @param searchString
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/location", method = RequestMethod.GET)
-	public List<User> findByLocation(
-			@RequestParam(required = true, value = "latitude1") double latitude1,
-			@RequestParam(required = true, value = "latitude2") double latitude2,
-			@RequestParam(required = true, value = "longitude1") double longitude1,
-			@RequestParam(required = true, value = "longitude2") double longitude2
-			) throws ResourceError{
-		return registrationService.findUserByLocation(latitude1, latitude2, longitude1, longitude2); 
-	}
-
 }

@@ -83,6 +83,8 @@ public class ResourceController {
 			@RequestParam(required = true, value = "username") String username,
 			@RequestParam(required = true, value = "email") String email,
 			@RequestParam(required = true, value = "password") String password,
+			@RequestParam(required = true, value = "designation") String designation,
+			@RequestParam(required = true, value = "description") String description,
 			@RequestParam(required = false, value = "profilePic") MultipartFile profilePic) throws ResourceError, IOException {
 
 			User user = new User.UserBuilder()
@@ -92,6 +94,8 @@ public class ResourceController {
 					.email(email)
 					.password(password)
 					.visible(Integer.parseInt(visible))
+					.designation(designation)
+					.description(description)
 					.profilePic(
 							profilePic != null ? profilePic.getBytes() : null).build();
 			registrationService.register(user);
@@ -133,6 +137,8 @@ public class ResourceController {
 			@RequestParam(required = true, value = "visible", defaultValue="0") String visible,
 			@RequestParam(required = false, value = "email") String email,
 			@RequestParam(required = false, value = "contact") String contact,
+			@RequestParam(required = true, value = "designation") String designation,
+			@RequestParam(required = true, value = "description") String description,
 			@RequestParam(required = false, value = "profilePic") MultipartFile profilePic,
 			HttpServletRequest request)  throws ResourceError, IOException{
 			
@@ -145,6 +151,8 @@ public class ResourceController {
 					.email(email)
 					.visible(Integer.parseInt(visible))
 					.userName(username)
+					.designation(designation)
+					.description(description)
 					.profilePic(
 							profilePic != null ? profilePic.getBytes() : null)
 					.build();

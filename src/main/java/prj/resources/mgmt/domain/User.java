@@ -9,19 +9,23 @@ public class User {
 	private String password;
 	private byte[] profilePic;
 	private int visible;
-	private double latitude;
-	private double longitude;
+	private int status;
+	private String designation;
+	private String description;
 	
-	
-	
-	public double getLatitude() {
-		return latitude;
-	}
 
-	public double getLongitude() {
-		return longitude;
+	public String getDesignation() {
+		return designation;
 	}
-
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public int getStatus() {
+		return status;
+	}
+	
 	public int getVisible() {
 		return visible;
 	}
@@ -53,7 +57,7 @@ public class User {
 	
 	public User(String name, String contact,
 			String username, String email, String password,
-			byte[] profilePic, Location location, int visible) {
+			byte[] profilePic, Location location, int visible, int status, String designation, String description) {
 		super();
 		this.name = name;
 		this.contact = contact;
@@ -62,8 +66,9 @@ public class User {
 		this.password = password;
 		this.profilePic = profilePic;
 		this.visible = visible;
-		this.latitude = location.getLatitude();
-		this.longitude = location.getLongitude();
+		this.status = status;
+		this.designation = designation;
+		this.description = description;
 	}
 	
 	private User(UserBuilder builder) {
@@ -74,10 +79,10 @@ public class User {
 		this.password = builder.password;
 		this.profilePic = builder.profilePic;
 		this.visible = builder.visible;
-		if(builder.location != null) {
-			this.latitude = builder.location.getLatitude();
-			this.longitude = builder.location.getLongitude();
-		}
+		this.status = builder.status;
+		this.designation = builder.designation;
+		this.description = builder.description;
+		
 	}
 	
 	public static class UserBuilder {
@@ -88,13 +93,25 @@ public class User {
 		private String password;
 		private byte[] profilePic;
 		private int visible;
-		private Location location;
+		private int status;
+		private String designation;
+		private String description;
 		
-		public UserBuilder location(Location location) {
-			this.location = location;
+		public UserBuilder designation(String designation) {
+			this.designation = designation;
+			return this;
+		}
+				
+		public UserBuilder description(String description) {
+			this.description = description;
 			return this;
 		}
 		
+		public UserBuilder status(int status) {
+			this.status = status;
+			return this;
+		}
+				
 		public UserBuilder name(String name) {
 			this.name = name;
 			return this;

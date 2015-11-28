@@ -108,6 +108,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			inputData.put("_email", user.getEmail());
 			inputData.put("_contact", user.getContact());
 			inputData.put("_profilePic", user.getProfilePic());
+			inputData.put("_designation", user.getDesignation());
+			inputData.put("_description", user.getDescription());
 
 			SqlParameterSource in = new MapSqlParameterSource()
 					.addValues(inputData);
@@ -136,6 +138,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			inputData.put("_email", user.getEmail());
 			inputData.put("_contact", user.getContact());
 			inputData.put("_profilePic", user.getProfilePic());
+			inputData.put("_designation", user.getDesignation());
+			inputData.put("_description", user.getDescription());
 
 			SqlParameterSource in = new MapSqlParameterSource()
 					.addValues(inputData);
@@ -190,17 +194,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 							new RowMapper<User>() {
 								public User mapRow(ResultSet rs, int rowCount)
 										throws SQLException {
-									
-
-									Location location = new Location();
-									location.setLatitude(rs.getDouble("latitude"));
-									location.setLongitude(rs.getDouble("longitude"));
-									
+																		
 									User u = new User.UserBuilder().userName(rs.getString("username"))
 											.name(rs.getString("name"))
 											.email(rs.getString("email"))
 											.contact(rs.getString("contact"))
-											.location(location)
 											.build();
 
 									return u;
@@ -216,49 +214,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return (List<User>) out.get("rs1");
 	}
 
-	public List<User> findUserByLocation(double latitude1, double latitude2, double longitude1, double longitude2) throws ResourceError {
-		String procName = "findUserByLocation";
-		Map<String, Object> out = null;
-		try {
-				SimpleJdbcCall findByLocation = new SimpleJdbcCall(dataSource)
-					.withProcedureName(procName).returningResultSet("rs1",
-							new RowMapper<User>() {
-								public User mapRow(ResultSet rs, int rowCount)
-										throws SQLException {
-									
-
-									Location location = new Location();
-									location.setLatitude(rs.getDouble("latitude"));
-									location.setLongitude(rs.getDouble("longitude"));
-
-									User u = new User.UserBuilder().userName(rs.getString("username"))
-											.name(rs.getString("name"))
-											.email(rs.getString("email"))
-											.contact(rs.getString("contact"))
-											.location(location)
-											.build();
-
-									return u;
-								}
-							});
-
-			Map<String, Double> values = new HashMap<String, Double>();
-			values.put("_latitude1",latitude1);
-			values.put("_latitude2",latitude2);
-			values.put("_longitude1",longitude1);
-			values.put("_longitude2",longitude2);
-			
-			SqlParameterSource in = new MapSqlParameterSource().addValues(values);
-
-			out = findByLocation.execute(in);
-		} catch (DataAccessException e) {
-			handleDataAcessException(e);
-		}
-		return (List<User>) out.get("rs1");
-	}
-
-	
-	
+		
 	// isPwdReset
 	public int isPasswordResetNeeded(String userName) throws ResourceError{
 		Integer i = 0;
@@ -326,16 +282,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 							new RowMapper<User>() {
 								public User mapRow(ResultSet rs, int rowCount)
 										throws SQLException {
-									
-									Location l = new Location();
-									l.setLatitude(rs.getDouble("latitude"));
-									l.setLongitude(rs.getDouble("longitude"));
-									
+																	
 									User u = new User.UserBuilder().userName(rs.getString("username"))
 											.name(rs.getString("name"))
 											.email(rs.getString("email"))
 											.contact(rs.getString("contact"))
-											.location(l)
 											.build();
 
 									return u;

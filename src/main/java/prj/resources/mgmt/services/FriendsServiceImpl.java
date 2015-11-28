@@ -102,7 +102,8 @@ public class FriendsServiceImpl  implements FriendsService{
 	}
 		
 	private List<User> getFriends(User user, String procedure) throws ResourceError {
-		String procName = procedure;
+		final String procName = procedure;
+		
 		Map<String, Object> out = null;
 		try {
 			SimpleJdbcCall getFriends = new SimpleJdbcCall(dataSource)
@@ -110,8 +111,13 @@ public class FriendsServiceImpl  implements FriendsService{
 							new RowMapper<User>() {
 								public User mapRow(ResultSet rs,
 										int rowCount) throws SQLException {
-
-									return new User.UserBuilder().name(rs.getString("name")).userName(rs.getString("friendName")).build();
+									User u = null;
+									if(procName.equals("showNonFriends")){
+										u = new User.UserBuilder().name(rs.getString("userName")).userName(rs.getString("displayName")).status(Integer.parseInt(rs.getString("status"))).build();
+									} else {
+										u = new User.UserBuilder().name(rs.getString("userName")).userName(rs.getString("displayName")).build();
+									}
+									return u;
 								}
 							});
 
