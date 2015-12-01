@@ -82,7 +82,7 @@ public class FriendsServiceImpl  implements FriendsService{
 	public void updateFriendStatus(User user, User friend, int status) throws ResourceError {
 		try {
 			SimpleJdbcCall addParamJdbcCall = new SimpleJdbcCall(dataSource)
-					.withProcedureName("addFriend");
+					.withProcedureName("updateFriendStatus");
 
 			Map<String, Object> inputData = new HashMap<String, Object>();
 			inputData.put("_user1", user.getUsername());
@@ -113,7 +113,7 @@ public class FriendsServiceImpl  implements FriendsService{
 										int rowCount) throws SQLException {
 									User u = null;
 									if(procName.equals("showNonFriends")){
-										u = new User.UserBuilder().name(rs.getString("userName")).userName(rs.getString("displayName")).status(Integer.parseInt(rs.getString("status"))).build();
+										u = new User.UserBuilder().name(rs.getString("userName")).userName(rs.getString("displayName")).status(rs.getString("status")).build();
 									} else {
 										u = new User.UserBuilder().name(rs.getString("userName")).userName(rs.getString("displayName")).build();
 									}

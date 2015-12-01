@@ -9,7 +9,7 @@ public class User {
 	private String password;
 	private byte[] profilePic;
 	private int visible;
-	private int status;
+	private String status;
 	private String designation;
 	private String description;
 	
@@ -22,7 +22,7 @@ public class User {
 		return description;
 	}
 	
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 	
@@ -57,7 +57,7 @@ public class User {
 	
 	public User(String name, String contact,
 			String username, String email, String password,
-			byte[] profilePic, Location location, int visible, int status, String designation, String description) {
+			byte[] profilePic, Location location, int visible, String status, String designation, String description) {
 		super();
 		this.name = name;
 		this.contact = contact;
@@ -93,7 +93,7 @@ public class User {
 		private String password;
 		private byte[] profilePic;
 		private int visible;
-		private int status;
+		private String status;
 		private String designation;
 		private String description;
 		
@@ -107,7 +107,7 @@ public class User {
 			return this;
 		}
 		
-		public UserBuilder status(int status) {
+		public UserBuilder status(String status) {
 			this.status = status;
 			return this;
 		}
