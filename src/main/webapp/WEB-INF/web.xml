@@ -53,7 +53,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/feedback/*</url-pattern>
 	</filter-mapping>
 
-	<filter>
+	<!-- <filter>
 	  <filter-name>CorsFilter</filter-name>
 	  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
 	  <init-param>
@@ -62,7 +62,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	  </init-param>
 	  <init-param>
 	    <param-name>cors.allowed.methods</param-name>
-	    <param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>
+	    <param-value>GET,POST,HEAD,OPTIONS,PUT,DELETE</param-value>
 	  </init-param>
 	  <init-param>
 	    <param-name>cors.allowed.headers</param-name>
@@ -84,7 +84,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	<filter-mapping>
 	  <filter-name>CorsFilter</filter-name>
 	  <url-pattern>/*</url-pattern>
-	</filter-mapping>
+	</filter-mapping>-->
 
 <!-- - Servlet that dispatches request to registered handlers (Controller 
 		implementations). -->
