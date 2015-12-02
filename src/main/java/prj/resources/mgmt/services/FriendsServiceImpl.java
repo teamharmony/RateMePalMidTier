@@ -57,6 +57,7 @@ public class FriendsServiceImpl  implements FriendsService{
 
 	}
 
+		
 	public void addFriend(User user, User friend) throws ResourceError {
 		try {
 			SimpleJdbcCall addParamJdbcCall = new SimpleJdbcCall(dataSource)
@@ -101,7 +102,8 @@ public class FriendsServiceImpl  implements FriendsService{
 		FriendsQueue.addMessage(friend.getUsername(), Integer.toString(status));
 	}
 		
-	private List<User> getFriends(User user, String procedure) throws ResourceError {
+	//TODO: Replace user with InputMap as the first param.
+	private List<User> getFriends(SqlParameterSource in, String procedure) throws ResourceError {
 		final String procName = procedure;
 		
 		Map<String, Object> out = null;
@@ -120,10 +122,6 @@ public class FriendsServiceImpl  implements FriendsService{
 									return u;
 								}
 							});
-
-			SqlParameterSource in = new MapSqlParameterSource().addValue(
-					"_user1", user.getUsername());
-
 			out = getFriends.execute(in);
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
@@ -131,20 +129,42 @@ public class FriendsServiceImpl  implements FriendsService{
 		return (List<User>) out.get("rs1");
 	}
 	
+	public List<User> searchFriends(User user, String _searchKey) throws ResourceError {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("_user1", user.getName());
+		params.put("_searchKey", _searchKey);
+
+		return this.getFriends(new MapSqlParameterSource().addValues(params), "searchFriends");
+	}
+	
+	
+	public List<User> searchNonFriends(User user, String _searchKey) throws ResourceError {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("_user1", user.getName());
+		params.put("_searchKey", _searchKey);
+
+		return this.getFriends(new MapSqlParameterSource().addValues(params), "searchNonFriends");
+	}
+	
+	
 	public List<User> showFriends(User user) throws ResourceError {
-		return this.getFriends(user, "showFriends");
+		return this.getFriends(new MapSqlParameterSource().addValue(
+				"_user1", user.getUsername()), "showFriends");
 	}
 	
 	public List<User> showInvitedFriends(User user) throws ResourceError {
-		return this.getFriends(user, "showInvitedFriends");
+		return this.getFriends(new MapSqlParameterSource().addValue(
+				"_user1", user.getUsername()), "showInvitedFriends");
 	}
 
 	public List<User> showPendingFriends(User user) throws ResourceError {
-		return this.getFriends(user, "showPendingFriends");
+		return this.getFriends(new MapSqlParameterSource().addValue(
+				"_user1", user.getUsername()), "showPendingFriends");
 	}
 
 	public List<User> showNonFriends(User user) throws ResourceError {
-		return this.getFriends(user, "showNonFriends");
+		return this.getFriends(new MapSqlParameterSource().addValue(
+				"_user1", user.getUsername()), "showNonFriends");
 	}
 
 }

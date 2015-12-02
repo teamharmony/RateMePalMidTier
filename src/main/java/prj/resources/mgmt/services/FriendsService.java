@@ -19,4 +19,9 @@ public interface FriendsService {
 	
 	public void updateFriendStatus(User user, User friend, int status) throws ResourceError;
 		
+	public List<User> searchFriends(User user, String searchKey) throws ResourceError;
+	
+	public List<User> searchNonFriends(User user, String searchKey) throws ResourceError;
+	
+	
 }

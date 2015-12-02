@@ -96,6 +96,59 @@ create procedure updateFriendStatus(
 delimiter ;
 
 
+
+
+drop procedure searchFriends;		
+delimiter //
+create procedure searchFriends(IN _user1 varchar(12), IN _searchKey varchar(30))
+	begin
+	    SELECT u.name as displayName, f.friendname as username
+	    FROM friends f 
+	    INNER JOIN user_details u 
+	    ON ( u.username = f.friendname  AND u.name LIKE  concat('%',  lower(_searchKey) , '%'))
+	    WHERE f.username = _user1 AND f.status = 2;
+	end//
+delimiter ;
+
+
+
+
+drop procedure searchNonFriends;		
+delimiter //
+create procedure searchNonFriends(IN _user1 varchar(12), IN _searchKey varchar(30))
+	begin
+	
+		DROP TEMPORARY TABLE IF EXISTS tblResults1;
+	  	CREATE TEMPORARY TABLE IF NOT EXISTS tblResults1  (
+			username varchar(12) not null,
+			displayName varchar(30) not null,
+			status smallint default 0
+	  	);
+
+		INSERT into tblResults1
+		SELECT  u.username , ud.name as displayName, f.status
+		from users u
+		INNER JOIN user_details ud
+		ON(u.username = ud.username)
+		LEFT JOIN friends f
+		ON(u.username = f.friendname AND f.username = _user1)
+		WHERE u.username != _user1
+		GROUP BY u.username;
+					
+		SELECT DISTINCT * from tblResults1
+		WHERE displayName LIKE  concat('%',  lower(_searchKey) , '%') AND username NOT IN (
+			    SELECT f.friendname
+			    FROM friends f 
+			    INNER JOIN user_details u 
+			    ON ( u.username = f.friendname)
+			    WHERE f.username = _user1 AND f.status = 2);
+
+end//
+delimiter ;
+
+
+
+
 drop procedure showFriends;		
 delimiter //
 create procedure showFriends(IN _user1 varchar(12))
