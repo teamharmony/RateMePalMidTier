@@ -86,6 +86,27 @@
 	</http>
 
 
+	<http pattern="/dataRequest/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		access-decision-manager-ref="accessDecisionManager"
+		xmlns="http://www.springframework.org/schema/security">
+		<intercept-url pattern="/dataRequest/**" access="ROLE_USER" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+
+
+
+	<http pattern="/rating/**" create-session="never"
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		access-decision-manager-ref="accessDecisionManager"
+		xmlns="http://www.springframework.org/schema/security">
+		<intercept-url pattern="/rating/**" access="ROLE_USER" />
+		<custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+
+
 	<http pattern="/password/**" create-session="never"
 		entry-point-ref="oauthAuthenticationEntryPoint"
 		access-decision-manager-ref="accessDecisionManager"

@@ -161,9 +161,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
 		}
-		return (byte[]) out.get("_profilepic");
+		
+		return (byte[]) out.get("profilepic");
 	}
-
+	
 	public void updatePwd(String userName, String pwd, int reset) throws ResourceError {
 		try {
 			SimpleJdbcCall updatePasswordJdbcCall = new SimpleJdbcCall(

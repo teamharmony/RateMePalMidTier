@@ -6,6 +6,16 @@
 
 	<import resource="resourceMgmt-security.xml"/>
 	
+	<bean id="requestService" class="prj.resources.mgmt.services.RequestServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	
+	<bean id="ratingService" class="prj.resources.mgmt.services.RatingServiceImpl">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	
 	<bean id="friendsService" class="prj.resources.mgmt.services.FriendsServiceImpl">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>

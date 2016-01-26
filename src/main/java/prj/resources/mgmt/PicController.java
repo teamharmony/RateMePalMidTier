@@ -27,7 +27,7 @@ public class PicController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value = "/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{username:.+}", method = RequestMethod.GET)
 	public byte[] getProfilePic(@PathVariable String username, HttpServletRequest request,
 			HttpServletResponse response) throws ResourceError{
 		

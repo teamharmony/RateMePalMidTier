@@ -55,6 +55,51 @@ public class User {
 	}
 
 	
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setProfilePic(byte[] profilePic) {
+		this.profilePic = profilePic;
+	}
+
+	public void setVisible(int visible) {
+		this.visible = visible;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public User(){
+		//do nothing
+	}
+	
 	public User(String name, String contact,
 			String username, String email, String password,
 			byte[] profilePic, Location location, int visible, String status, String designation, String description) {

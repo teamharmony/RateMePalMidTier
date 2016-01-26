@@ -50,6 +50,8 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<url-pattern>/logout</url-pattern>
 		<url-pattern>/parameters/*</url-pattern>
 		<url-pattern>/friends/*</url-pattern>
+		<url-pattern>/rating/*</url-pattern>
+		<url-pattern>/dataRequest/*</url-pattern>
 		<url-pattern>/search/*</url-pattern>
 		<url-pattern>/feedback/*</url-pattern>
 	</filter-mapping>

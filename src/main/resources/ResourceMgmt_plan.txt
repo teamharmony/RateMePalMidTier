@@ -31,9 +31,6 @@ create table user_details(
 	) engine=InnoDB;
 
 
-CREATE UNIQUE INDEX search_by_name
-ON user_details ( name);
-
 
 
 drop table friends;
@@ -418,11 +415,9 @@ delimiter ;
 
 drop procedure getUserProfilePic;
 delimiter //
-create procedure getUserProfilePic(IN _username varchar(12),
-						OUT _profilePic longblob
-)
+create procedure getUserProfilePic(IN _username varchar(12))
 begin 
-	select profilePic into _profilePic
+	select profilePic
 		from user_details
 			where username = _username;
 end//
@@ -437,3 +432,239 @@ begin
 end//
 delimiter ;
 
+
+
+
+
+
+drop table dataRequests;
+Create table dataRequests(
+	requestId int not null auto_increment,
+	requestName varchar(250),
+	friendCreated smallint,
+	creationTime bigint,
+	primary key(requestId)
+);
+
+drop table dataRequestsDetails;
+Create table dataRequestsDetails(
+	detailId int not null auto_increment,
+	requestId int not null,
+	paramId smallint not null,
+	friend varchar(12),
+	primary key(detailId, paramId),
+	foreign key(requestId) references dataRequests(requestId),
+	foreign key(friend) references users(username),
+	foreign key(paramId) references parameters(id)
+);
+
+drop table rating;
+create table rating(
+	ratingId int not null auto_increment,
+	detailId int not null,
+	paramId smallint not null,
+	rating smallint,
+	primary key(ratingId),
+	foreign key(detailId, paramId) references dataRequestsDetails(detailId, paramId),
+);
+
+
+drop procedure addDataRequest;
+delimiter //
+CREATE PROCEDURE addDataRequest
+     (
+	IN requestName varchar(250),
+	IN friendCreated smallint,
+	OUT requestid int
+     )
+BEGIN 
+
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		rollback;
+		resignal;
+	END;
+
+	
+	start transaction;
+		INSERT INTO dataRequests(requestName, friendCreated, creationTime)
+		VALUES(requestName, friendCreated, unix_timestamp());
+		
+		SELECT LAST_INSERT_ID() into requestid;
+	commit;
+end//
+delimiter;
+
+
+
+drop procedure addDataRequestDetails;
+delimiter //
+CREATE PROCEDURE addDataRequestDetails
+     (
+        IN  requestId int,
+        IN  paramList varchar(5000),
+        IN  friendList varchar(5000)
+     )
+BEGIN 
+
+	DECLARE friendsSubStrLen INT DEFAULT 0;
+	DECLARE paramSubStrLen INT DEFAULT 0;
+
+	DECLARE currentFriend Varchar(12);
+	DECLARE currentParamId int;
+	
+	DECLARE workedParamList varchar(5000);
+
+
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		rollback;
+		resignal;
+	END;
+
+	start transaction;
+
+	IF paramList IS NULL THEN
+    		SET paramList = '';
+  	END IF;
+
+
+	IF friendList IS NULL THEN
+    		SET friendList = '';
+  	END IF;
+
+
+	friendsLoop:
+  		LOOP
+		set currentFriend = SUBSTRING_INDEX(friendList, ',', 1);
+		set workedParamList = paramList;
+		
+		paramLoop:
+			Loop
+				set currentParamId = cast(SUBSTRING_INDEX(workedParamList, ',', 1) as unsigned);
+				
+				insert into dataRequestsDetails(requestId, paramId, friend)
+				values(requestId, currentParamId, currentFriend);
+				
+			    	SET paramSubStrLen = CHAR_LENGTH(SUBSTRING_INDEX(workedParamList, ',', 1)) + 2;
+    				SET workedParamList = MID(workedParamList, paramSubStrLen);
+
+				IF workedParamList = '' THEN
+					LEAVE paramLoop;
+				 END IF;
+
+			End Loop paramLoop;
+
+			
+    		SET friendsSubStrLen = CHAR_LENGTH(SUBSTRING_INDEX(friendList, ',', 1)) + 2;
+    		SET friendList = MID(friendList, friendsSubStrLen);
+
+    		IF friendList = '' THEN
+      			LEAVE friendsLoop;
+   		 END IF;
+  
+  	END LOOP friendsLoop;
+
+	commit;
+end//
+delimiter;
+
+
+
+
+drop procedure getRatingRequestsByUser;
+delimiter //
+CREATE PROCEDURE getRatingRequestsByUser
+     (
+        IN  user varchar(12)
+     )
+BEGIN 
+
+select dr.requestId, dr.requestName, dr.friendCreated,
+		drd.detailId, drd.paramId, p.name as paramName, p.text as paramText, u.name as displayName, u.designation as designation
+from dataRequests as dr, dataRequestsDetails as drd, user_details as u, parameters as p
+where dr.requestId  = drd.requestId and
+p.id = drd.paramId and
+u.username = drd.friend and
+p.creator = user
+order by dr.creationTime desc;
+
+
+end//
+delimiter;
+
+
+drop procedure getRatingRequestsToUser;
+delimiter //
+CREATE PROCEDURE getRatingRequestsToUser
+     (
+        IN  user varchar(12)
+     )
+BEGIN 
+
+select dr.requestId, dr.requestName, dr.friendCreated,
+		drd.detailId, drd.paramId, p.name as paramName, p.text as paramText, u.name as displayName, u.designation as designation
+from dataRequests as dr, dataRequestsDetails as drd, user_details as u, parameters as p
+where dr.requestId  = drd.requestId and
+p.id = drd.paramId and
+u.username = p.creator and
+drd.friend = user
+order by dr.creationTime desc;
+
+end//
+delimiter;
+
+
+
+drop procedure getRatingAverage;
+delimiter //
+CREATE PROCEDURE getRatingAverage
+     (
+        IN  paramList VARCHAR(5000)
+     )
+BEGIN 
+		set @sql = concat('select paramId, avg(rating) as rating from rating where paramId IN (', paramList , ') group by paramId');
+		
+		PREPARE stmt1 FROM @sql;
+
+		EXECUTE stmt1;
+		
+		DEALLOCATE PREPARE stmt1;	
+		
+	end//
+delimiter;
+
+drop procedure getIndividualRating;
+delimiter //
+CREATE PROCEDURE getIndividualRating
+     (
+		IN  detailList varchar(5000)
+     )
+BEGIN 
+		set @sql = concat('select paramId, detailId, rating from rating where detailId IN (', detailList , ')');
+		
+		PREPARE stmt1 FROM @sql;
+
+		EXECUTE stmt1;
+		
+		DEALLOCATE PREPARE stmt1;	
+end//
+delimiter;
+
+
+drop procedure rateAParam;
+delimiter //
+CREATE PROCEDURE rateAParam
+(
+        IN  _detailId int, 
+        IN  _paramId int, 
+        IN  rating smallint 
+ )
+BEGIN 
+
+		delete from rating where paramId = _paramId and detailId=_detailId;
+
+   		INSERT INTO rating(detailId, paramId, rating)
+	    	VALUES(_detailId, _paramId, rating);
+end//
+delimiter;
