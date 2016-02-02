@@ -305,6 +305,57 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	
 	
+	public List<String> getDeviceMapping(String userName) throws ResourceError {
+		String procName = "getUserDeviceMapping";
+		Map<String, Object> out = null;
+		try {
+				SimpleJdbcCall findByName = new SimpleJdbcCall(dataSource)
+					.withProcedureName(procName).returningResultSet("rs1",
+							new RowMapper<String>() {
+								public String mapRow(ResultSet rs, int rowCount)
+										throws SQLException {
+												
+									return rs.getString("deviceId");
+									
+								}
+							});
+
+			SqlParameterSource in = new MapSqlParameterSource().addValue("username", userName);
+
+			out = findByName.execute(in);
+		} catch (DataAccessException e) {
+			handleDataAcessException(e);
+		}
+		return (List<String>) out.get("rs1");
+	}
+	
+	public void removeDeviceMapping(String username, String deviceId) throws ResourceError {
+		handleDeviceMapping("removeUserDeviceMapping", username, deviceId);
+	}
+	
+	public void addDeviceMapping(String username, String deviceId) throws ResourceError {
+		handleDeviceMapping("addUserDeviceMapping", username, deviceId);
+	}
+	
+	private void handleDeviceMapping(String procName, String username, String deviceId) throws ResourceError {
+		try {
+			SimpleJdbcCall addUDMapping = new SimpleJdbcCall(dataSource)
+					.withProcedureName(procName);
+
+			Map<String, Object> inputData = new HashMap<String, Object>();
+
+			inputData.put("username", username);
+			inputData.put("deviceId", deviceId);
+			
+			SqlParameterSource in = new MapSqlParameterSource()
+					.addValues(inputData);
+			addUDMapping.execute(in);
+		} catch (DataAccessException e) {
+			handleDataAcessException(e);
+		}
+
+	}
+	
 	
 	
 

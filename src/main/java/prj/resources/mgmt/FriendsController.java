@@ -23,7 +23,9 @@ import prj.resources.mgmt.domain.Parameter;
 import prj.resources.mgmt.domain.ParameterType;
 import prj.resources.mgmt.domain.User.UserBuilder;
 import prj.resources.mgmt.services.FriendsService;
+import prj.resources.mgmt.services.NotificationsUtil;
 import prj.resources.mgmt.services.ParameterService;
+import prj.resources.mgmt.services.RegistrationService;
 
 @RequestMapping("/friends")
 @Controller
@@ -32,6 +34,9 @@ public class FriendsController {
 	@Autowired
 	private FriendsService friendsService;
 
+	@Autowired
+	private RegistrationService registrationService;
+	
 	@ExceptionHandler()
 	public ResponseEntity<ClientErrorInfo> errorHandle(Exception e) {
 		ClientErrorInfo c;
@@ -58,6 +63,15 @@ public class FriendsController {
 		User friend = new User.UserBuilder().userName(friendUserName).build();
 		
 		friendsService.addFriend(self, friend);
+		
+		String fromName = registrationService.getUserDetailsByName(creator).getName();
+		
+		String template = "You have a friend request from " +  fromName + "!";
+		
+		List<String> devices = registrationService.getDeviceMapping(friendUserName);
+		
+		NotificationsUtil.sendNotification(template, devices);
+			
 	}
 	
 	
@@ -101,5 +115,19 @@ public class FriendsController {
 		User friend = new User.UserBuilder().userName(friendname).build();
 		
 		friendsService.updateFriendStatus(self, friend, status);
+		
+		
+		String fromName = registrationService.getUserDetailsByName(username).getName();
+		String template = null;
+		
+		if(status == 2) {
+			template = "Congrats! " +  fromName + " accepted your friend request.";
+		} else if(status == 3) {
+			template = fromName + " did not accept your friend request.";
+		}
+		 
+		List<String> devices = registrationService.getDeviceMapping(friendname);
+		NotificationsUtil.sendNotification(template, devices);
+		
 	}	
 }
