@@ -109,6 +109,7 @@ public class ParameterServiceImpl implements ParameterService {
 
 									Parameter p = new Parameter();
 									p.setId(rs.getInt("id"));
+									p.setCreator(rs.getString("creator"));
 									p.setType(ParameterType.valueOf(rs.getInt("type")));
 									p.setName(rs.getString("name"));
 									p.setText(rs.getString("text"));

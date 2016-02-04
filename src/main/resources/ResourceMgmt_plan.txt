@@ -154,7 +154,7 @@ drop procedure searchFriends;
 delimiter //
 create procedure searchFriends(IN _user1 varchar(12), IN _searchKey varchar(30))
 	begin
-	    SELECT u.name as displayName, f.friendname as username
+	    SELECT u.name as displayName, f.friendname as username, u.designation, u.description, f.status
 	    FROM friends f 
 	    INNER JOIN user_details u 
 	    ON ( u.username = f.friendname  AND u.name LIKE  concat('%',  lower(_searchKey) , '%'))
@@ -174,11 +174,13 @@ create procedure searchNonFriends(IN _user1 varchar(12), IN _searchKey varchar(3
 	  	CREATE TEMPORARY TABLE IF NOT EXISTS tblResults1  (
 			username varchar(12) not null,
 			displayName varchar(30) not null,
-			status smallint default 0
+			status smallint default 0,
+			designation varchar(30) not null,
+			description varchar(120) not null
 	  	);
 
 		INSERT into tblResults1
-		SELECT  u.username , ud.name as displayName, f.status
+		SELECT  u.username , ud.name as displayName, f.status, ud.designation, ud.description
 		from users u
 		INNER JOIN user_details ud
 		ON(u.username = ud.username)
@@ -195,7 +197,7 @@ create procedure searchNonFriends(IN _user1 varchar(12), IN _searchKey varchar(3
 			    ON ( u.username = f.friendname)
 			    WHERE f.username = _user1 AND f.status = 2);
 
-end//
+	end//
 delimiter ;
 
 
@@ -205,7 +207,7 @@ drop procedure showFriends;
 delimiter //
 create procedure showFriends(IN _user1 varchar(12))
 	begin
-	    SELECT u.name as displayName, f.friendname as username
+	    SELECT u.name as displayName, f.friendname as username, u.designation, u.description, f.status
 	    FROM friends f 
 	    INNER JOIN user_details u 
 	    ON ( u.username = f.friendname )
@@ -218,7 +220,7 @@ drop procedure showInvitedFriends;
 delimiter //
 create procedure showInvitedFriends(IN _user1 varchar(12))
 	begin
-	    SELECT u.name as displayName, f.friendname as username
+	    SELECT u.name as displayName, f.friendname as username, u.designation, u.description, f.status
 	    FROM friends f 
 	    INNER JOIN user_details u 
 	    ON ( u.username = f.friendname )
@@ -231,7 +233,7 @@ drop procedure showPendingFriends;
 delimiter //
 create procedure showPendingFriends(IN _user1 varchar(12))
 	begin
-	    SELECT u.name as displayName, f.friendname as username
+	    SELECT u.name as displayName, f.friendname as username, u.designation, u.description, f.status
 	    FROM friends f 
 	    INNER JOIN user_details u 
 	    ON ( u.username = f.friendname )
@@ -249,11 +251,13 @@ create procedure showNonFriends(IN _user1 varchar(12))
 	  	CREATE TEMPORARY TABLE IF NOT EXISTS tblResults  (
 			username varchar(12) not null,
 			displayName varchar(30) not null,
-			status smallint default 0
+			status smallint default 0,
+			designation varchar(30) not null,
+			description varchar(120) not null
 	  	);
 
 		INSERT into tblResults
-		SELECT  u.username , ud.name as displayName, f.status
+		SELECT  u.username , ud.name as displayName, f.status, ud.designation, ud.description
 		from users u
 		INNER JOIN user_details ud
 		ON(u.username = ud.username)
@@ -377,7 +381,17 @@ begin
 		if _profilePic is not null then
 			update user_details
 				set profilePic = _profilePic where username = _username;
-		end if; 
+		end if;
+		
+		insert into parameters (type, creator, name) values (1, _username, 'Honesty');
+		insert into parameters (type, creator, name) values (1, _username, 'Personality');
+		insert into parameters (type, creator, name) values (1, _username, 'Optimism');
+		insert into parameters (type, creator, name) values (1, _username, 'Social');
+		
+		insert into parameters (type, creator, name) values (2, _username, 'Team Player');
+		insert into parameters (type, creator, name) values (2, _username, 'Leadership');
+		insert into parameters (type, creator, name) values (2, _username, 'Communication');
+		insert into parameters (type, creator, name) values (2, _username, 'Management');
 	commit;
 
 
@@ -520,7 +534,7 @@ create table rating(
 	paramId smallint not null,
 	rating smallint,
 	primary key(ratingId),
-	foreign key(detailId, paramId) references dataRequestsDetails(detailId, paramId),
+	foreign key(detailId, paramId) references dataRequestsDetails(detailId, paramId)
 );
 
 

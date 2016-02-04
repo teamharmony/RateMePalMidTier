@@ -71,8 +71,8 @@ public class ParameterController {
 
 
 	@ResponseBody
-	@RequestMapping(method = RequestMethod.GET)
-	public List<Parameter> showParameters(@RequestParam(required = true, value = "name") String name,
+	@RequestMapping(value="/showUserParameters", method = RequestMethod.GET)
+	public List<Parameter> showUserParameters(@RequestParam(required = true, value = "name") String name,
 			HttpServletRequest request) throws ResourceError {
 		return parameterService.showParameters(name);
 	}
