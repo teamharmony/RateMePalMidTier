@@ -68,9 +68,7 @@ public class FriendsController {
 		
 		String template = "You have a friend request from " +  fromName + "!";
 		
-		List<String> devices = registrationService.getDeviceMapping(friendUserName);
-		
-		NotificationsUtil.sendNotification(template, devices);
+		NotificationsUtil.sendNotification(template, new String[] {creator});
 			
 	}
 	
@@ -126,8 +124,7 @@ public class FriendsController {
 			template = fromName + " did not accept your friend request.";
 		}
 		 
-		List<String> devices = registrationService.getDeviceMapping(friendname);
-		NotificationsUtil.sendNotification(template, devices);
+		NotificationsUtil.sendNotification(template, new String[] {friendname});
 		
 	}	
 }

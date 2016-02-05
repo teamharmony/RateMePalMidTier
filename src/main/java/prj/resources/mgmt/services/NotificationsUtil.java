@@ -21,14 +21,10 @@ public class NotificationsUtil {
 	  public static final String PUSHWOOSH_SERVICE_BASE_URL = "https://cp.pushwoosh.com/json/1.3/";
 	  private static final String AUTH_TOKEN = "YOUR_AUTH_TOKEN";
 	  private static final String APPLICATION_CODE = "PW_APPLICATION_CODE";
-	 
+	  private static final String USERNAME_TAG = "username";
 	  
-	  public static void sendNotification(String content, List<String> deviceIds) {
-		  if(deviceIds != null && deviceIds.size() <= 0) {
-			  return;
-		  }
-		  
-		  String method = "createMessage";
+	  public static void sendNotification(String content, String[] data) {
+		    String method = "createMessage";
 	        URL url = null;
 			try {
 				url = new URL(PUSHWOOSH_SERVICE_BASE_URL + method);
@@ -37,18 +33,21 @@ public class NotificationsUtil {
 			}
 	 
 	        ObjectMapper mapper = new ObjectMapper();
-    	              
-	        ArrayNode devices = mapper.createArrayNode();
-	        for(String d : deviceIds) {
-	        	devices.add(d);
+    	    
+	        
+	        ArrayNode conditions =  mapper.createArrayNode();
+	       
+	        for(String d: data) {
+	        	ArrayNode usernameCondition =  mapper.createArrayNode().add(USERNAME_TAG).add("EQ").add(d);
+	        	conditions.add(usernameCondition);
 	        }
-	        	        
-	        JsonNode node =  mapper.createObjectNode()
+	        		
+	        JsonNode notifications =  mapper.createObjectNode()
 	        		.put("send_date", "now")
 	        		.put("content", content)
-	        		.put("devices", devices);
+	        		.put("conditions", conditions);
 	        
-	        ArrayNode notificationsArray = mapper.createArrayNode().add(node);
+	        ArrayNode notificationsArray = mapper.createArrayNode().add(notifications);
 	        
 	        JsonNode reqObject = mapper.createObjectNode()
 	        		.put("application", APPLICATION_CODE)

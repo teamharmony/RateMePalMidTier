@@ -11,13 +11,6 @@ import prj.resources.mgmt.domain.User;
 public interface RegistrationService {
 	
 	
-	public void addDeviceMapping(String userName, String deviceId) throws ResourceError;
-	
-	
-	public void removeDeviceMapping(String userName, String deviceId) throws ResourceError;
-	
-	
-	public List<String> getDeviceMapping(String userName) throws ResourceError;
 	
 	/**
 	 * Fetches User info from the back-end based on the supplied user name.

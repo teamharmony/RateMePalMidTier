@@ -139,8 +139,8 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 
-	public void rateAParam(Rating rating) throws ResourceError {
-		Map<String, Object> out = null;
+	public DataRequest rateAParam(Rating rating) throws ResourceError {
+		/*Map<String, Object> out = null;
 		try {
 			SimpleJdbcCall rateAParam = new SimpleJdbcCall(
 					dataSource).withProcedureName("rateAParam");
@@ -157,6 +157,38 @@ public class RatingServiceImpl implements RatingService {
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
 		}
+		*/
+
+		Map<String, Object> inputData = new HashMap<String, Object>();
+		inputData.put("_paramId", rating.getParamId());
+		inputData.put("_detailId", rating.getDetailId());
+		inputData.put("rating", rating.getRating());
+
+		Map<String, Object> out = null;
+		try {
+			SimpleJdbcCall rateAParam = new SimpleJdbcCall(dataSource)
+					.withProcedureName("rateAParam").returningResultSet("rs1",
+							new RowMapper<DataRequest>() {
+								public DataRequest mapRow(ResultSet rs,
+										int rowCount) throws SQLException {
+									String friend = rs.getString("creator");
+									int friendCreated = rs.getInt("friendCreated");
+									
+									DataRequest r = new DataRequest();
+									r.setFriendCreated(friendCreated);
+									User u = new User();
+									u.setUsername(friend);
+									r.setFriends(new User[]{u});
+									return r;
+								}
+							});
+			out = rateAParam.execute(new MapSqlParameterSource().addValues(inputData));
+		} catch (DataAccessException e) {
+			handleDataAcessException(e);
+		}
+		return (DataRequest) out.get("rs1");	
+		
+		
 	}
 
 }

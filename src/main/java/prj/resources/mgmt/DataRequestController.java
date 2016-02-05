@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import prj.resources.exception.ClientErrorInfo;
 import prj.resources.exception.ResourceError;
 import prj.resources.mgmt.domain.DataRequest;
+import prj.resources.mgmt.domain.User;
 import prj.resources.mgmt.filter.FilteredRequest;
+import prj.resources.mgmt.services.NotificationsUtil;
 import prj.resources.mgmt.services.RequestService;
 
 @RequestMapping("/dataRequest")
@@ -49,6 +51,15 @@ public class DataRequestController {
 			HttpServletRequest request) throws ResourceError {
 		
 		requestService.addDataRequest(dataRequest);
+		
+		String template = request.getParameter("username") + " sent you a rating request.";
+		String[] usernames = new String[]{};
+		int i=0;
+		for(User u : dataRequest.getFriends()) {
+			usernames[i++] = u.getUsername();
+		}
+		NotificationsUtil.sendNotification(template, usernames);
+		
 		return new ResponseEntity<DataRequest>(HttpStatus.CREATED);
 	}
 	

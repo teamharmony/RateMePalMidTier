@@ -3,6 +3,7 @@ package prj.resources.mgmt.services;
 import java.util.List;
 
 import prj.resources.exception.ResourceError;
+import prj.resources.mgmt.domain.DataRequest;
 import prj.resources.mgmt.domain.Parameter;
 import prj.resources.mgmt.domain.Rating;
 
@@ -34,7 +35,7 @@ public interface RatingService {
 	 * @param rating
 	 * @throws ResourceError 
 	 */
-	public void rateAParam(Rating rating) throws ResourceError;
+	public DataRequest rateAParam(Rating rating) throws ResourceError;
 	
 	
 }

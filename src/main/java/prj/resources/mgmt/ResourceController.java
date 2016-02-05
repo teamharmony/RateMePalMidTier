@@ -180,31 +180,5 @@ public class ResourceController {
 	}
 	
 	
-	@RequestMapping(value="/addDevice", method = RequestMethod.POST)
-	public ResponseEntity<User> addDeviceMapping(
-			@RequestParam(required = true, value = "deviceId") String deviceId,
-			HttpServletRequest request)  throws ResourceError{
-		
-		String username = request.getParameter("username");
-		
-		registrationService.addDeviceMapping(username, deviceId);
-		
-		return new ResponseEntity<User>(HttpStatus.CREATED);
-	
-	}
-	
-	@RequestMapping(value="/removeDevice", method = RequestMethod.DELETE)
-	public ResponseEntity<User> removeDeviceMapping(
-			@RequestParam(required = true, value = "deviceId") String deviceId,
-			HttpServletRequest request)  throws ResourceError{
-		
-		String username = request.getParameter("username");
-		
-		registrationService.removeDeviceMapping(username, deviceId);
-		
-		return new ResponseEntity<User>(HttpStatus.CREATED);
-	
-	}
-	
 
 }

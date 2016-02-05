@@ -32,16 +32,6 @@ create table user_details(
 
 
 
-drop table deviceMapping;
-create table deviceMapping (
-	username varchar(12) not null,
-	deviceId varchar(250) not null,
-	primary key(username, deviceId),
-	foreign key(username) references users(username)	
-)engine=InnoDB;
-
-
-
 
 drop table friends;
 create table friends (
@@ -56,49 +46,6 @@ create table friends (
 
 
 
-
-
-drop procedure addUserDeviceMapping;		
-delimiter //
-create procedure addUserDeviceMapping(
-								IN username varchar(12), 
-								IN deviceId varchar(250)
-							)
-	begin
-
-		INSERT IGNORE INTO deviceMapping (username, deviceId)
-		VALUES (username, deviceId);	
-		
-	end//
-delimiter ;
-
-drop procedure removeUserDeviceMapping;		
-delimiter //
-create procedure removeUserDeviceMapping(
-								IN username varchar(12), 
-								IN deviceId varchar(250)
-							)
-	begin
-
-		DELETE FROM deviceMapping as dm
-		WHERE dm.username = username AND dm.deviceId = deviceId;	
-		
-	end//
-delimiter ;
-
-
-drop procedure getUserDeviceMapping;		
-delimiter //
-create procedure getUserDeviceMapping(
-								IN username varchar(12) 
-								)
-	begin
-
-		SELECT deviceId FROM deviceMapping 
-		WHERE dm.username = username;	
-		
-	end//
-delimiter ;
 
 
 drop procedure addFriend;		
@@ -735,5 +682,12 @@ BEGIN
 
    		INSERT INTO rating(detailId, paramId, rating)
 	    	VALUES(_detailId, _paramId, rating);
+	    	
+	    Select p.creator, dr.friendCreated
+	    from parameters as p, dataRequests as dr, dataRequestsDetails as drd
+	    where dr.requestId = drd.requestId and
+	    drd.detailId = _detailId and
+	    p.id = _paramId;
+	    
 end//
 delimiter;

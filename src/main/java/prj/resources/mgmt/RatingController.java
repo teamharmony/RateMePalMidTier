@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import prj.resources.exception.ClientErrorInfo;
 import prj.resources.exception.ResourceError;
+import prj.resources.mgmt.domain.DataRequest;
 import prj.resources.mgmt.domain.Parameter;
 import prj.resources.mgmt.domain.Rating;
+import prj.resources.mgmt.services.NotificationsUtil;
 import prj.resources.mgmt.services.RatingService;
 
 @RequestMapping("/rating")
@@ -50,7 +52,18 @@ public class RatingController {
 	public ResponseEntity<Rating> rateAParam(@RequestBody Rating rating, 
 			HttpServletRequest request) throws ResourceError {
 		
-		ratingService.rateAParam(rating);
+		DataRequest d = ratingService.rateAParam(rating);
+		
+		String template = null;
+		
+		if(d.getFriendCreated() == 0) {
+			template = "Congrats! You received a rating response from " + request.getParameter("username");
+		} else {
+			template = "Congrats! You received a rating from " + request.getParameter("username");
+		}
+		
+		NotificationsUtil.sendNotification(template, new String[]{d.getFriends()[0].getUsername()});
+		
 		return new ResponseEntity<Rating>(HttpStatus.CREATED);
 	}
 	
