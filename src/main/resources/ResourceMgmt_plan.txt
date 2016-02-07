@@ -485,6 +485,22 @@ create table rating(
 );
 
 
+
+drop procedure getDetailId;
+delimiter //
+CREATE PROCEDURE getDetailId
+     (
+	IN requestid int,
+	OUT detailid int
+     )
+BEGIN
+select detailId into detailid from dataRequestsDetails
+where requestId = requestid;
+
+end//
+delimiter;
+
+
 drop procedure addDataRequest;
 delimiter //
 CREATE PROCEDURE addDataRequest

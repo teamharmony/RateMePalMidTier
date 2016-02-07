@@ -42,20 +42,23 @@ public class NotificationsUtil {
 	        	conditions.add(usernameCondition);
 	        }
 	        		
-	        JsonNode notifications =  mapper.createObjectNode()
-	        		.put("send_date", "now")
-	        		.put("content", content)
-	        		.put("conditions", conditions);
+	        ObjectNode notifications =  mapper.createObjectNode();
+	        
+	        notifications.put("send_date", "now");
+	        notifications.put("content", content);
+	        notifications.put("conditions", conditions);
 	        
 	        ArrayNode notificationsArray = mapper.createArrayNode().add(notifications);
 	        
-	        JsonNode reqObject = mapper.createObjectNode()
-	        		.put("application", APPLICATION_CODE)
-	        		.put("auth", AUTH_TOKEN)
-	        		.put("notifications", notificationsArray);
+	        ObjectNode reqObject = mapper.createObjectNode();
+	        reqObject.put("application", APPLICATION_CODE);
+	        reqObject.put("auth", AUTH_TOKEN);
+	        reqObject.put("notifications", notificationsArray);
 	 
 	        
-	        JsonNode mainRequest = mapper.createObjectNode().put("request", reqObject);
+	        ObjectNode mainRequest = mapper.createObjectNode();
+	        mainRequest.put("request", reqObject);
+	        
 	        String response = SendServerRequest.sendJSONRequest(url, mainRequest.toString());
 	 
 	        System.out.println("Response is: " + response);		  

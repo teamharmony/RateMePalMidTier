@@ -186,7 +186,9 @@ public class RatingServiceImpl implements RatingService {
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
 		}
-		return (DataRequest) out.get("rs1");	
+		List<DataRequest> f = (List<DataRequest>) out.get("rs1");
+		
+		return f.get(0);	
 		
 		
 	}

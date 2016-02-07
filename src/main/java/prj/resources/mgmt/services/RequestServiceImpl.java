@@ -76,11 +76,33 @@ public class RequestServiceImpl implements RequestService {
 		return (Integer)out.get("requestid");
 	}
 	
+
+	private int getDataRequestId(int requestId) throws ResourceError {
+		Map<String, Object> out = null;
+		try {
+			SimpleJdbcCall getDetailId = new SimpleJdbcCall(
+					dataSource).withProcedureName("getDetailId");
+
+			Map<String, Object> inputData = new HashMap<String, Object>();
+			inputData.put("requestid", requestId);
+			
+			SqlParameterSource in = new MapSqlParameterSource()
+					.addValues(inputData);
+
+			out = getDetailId.execute(in);
+		} catch (DataAccessException e) {
+			handleDataAcessException(e);
+		}
+		
+		return (Integer)out.get("detailid");
+	}
+
 	
-	public void addDataRequest(DataRequest request) throws ResourceError {
+	public int addDataRequest(DataRequest request) throws ResourceError {
+		int requestId = -99;
 		try {
 
-			int requestId = this.addDataRequest(request.getRequestName(), request.getFriendCreated());
+			requestId = this.addDataRequest(request.getRequestName(), request.getFriendCreated());
 			
 			String paramList = "";
 			String friendList = "";
@@ -111,6 +133,12 @@ public class RequestServiceImpl implements RequestService {
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
 		}
+		
+		if(request.getDetailId() == 1) {
+			return this.getDataRequestId(requestId);
+		}
+		
+		return requestId;
 	}
 
 	public List<DataRequest> getRatingRequestsByUser(String username)

@@ -50,17 +50,20 @@ public class DataRequestController {
 	public ResponseEntity<DataRequest> addDataRequest(@RequestBody DataRequest dataRequest, 
 			HttpServletRequest request) throws ResourceError {
 		
-		requestService.addDataRequest(dataRequest);
+		int detailId  = requestService.addDataRequest(dataRequest);
 		
 		String template = request.getParameter("username") + " sent you a rating request.";
-		String[] usernames = new String[]{};
+		String[] usernames = new String[dataRequest.getFriends().length];
 		int i=0;
 		for(User u : dataRequest.getFriends()) {
 			usernames[i++] = u.getUsername();
 		}
 		NotificationsUtil.sendNotification(template, usernames);
 		
-		return new ResponseEntity<DataRequest>(HttpStatus.CREATED);
+		DataRequest dummy = new DataRequest();
+		dummy.setDetailId(detailId);
+		
+		return new ResponseEntity<DataRequest>(dummy, HttpStatus.CREATED);
 	}
 	
 	@ResponseBody
