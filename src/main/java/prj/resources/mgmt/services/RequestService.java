@@ -16,7 +16,7 @@ public interface RequestService {
 	 * @return
 	 * @throws ResourceError 
 	 */
-	public int addDataRequest(DataRequest request) throws ResourceError;
+	public List<DataRequest> addDataRequest(DataRequest request) throws ResourceError;
 	
 	/**
 	 * Fetches the DataRequests created by User.

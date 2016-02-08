@@ -35,7 +35,7 @@ public interface RatingService {
 	 * @param rating
 	 * @throws ResourceError 
 	 */
-	public DataRequest rateAParam(Rating rating) throws ResourceError;
+	public DataRequest rateAParam(List<Rating> rating) throws ResourceError;
 	
 	
 }

@@ -490,11 +490,10 @@ drop procedure getDetailId;
 delimiter //
 CREATE PROCEDURE getDetailId
      (
-	IN requestid int,
-	OUT detailid int
+	IN requestid int
      )
 BEGIN
-select detailId into detailid from dataRequestsDetails
+select paramId, detailId  from dataRequestsDetails
 where requestId = requestid;
 
 end//
@@ -687,23 +686,74 @@ delimiter;
 drop procedure rateAParam;
 delimiter //
 CREATE PROCEDURE rateAParam
-(
-        IN  _detailId int, 
-        IN  _paramId int, 
-        IN  rating smallint 
- )
+     (
+        IN  ratings varchar(10000)
+     )
 BEGIN 
+
+	DECLARE ratingsSubStrLen INT DEFAULT 0;
+	DECLARE currentRatingsSubStrLen INT DEFAULT 0;
+	DECLARE currentRating Varchar(100);
+	
+	declare _detailId int;
+	declare _paramId smallint;
+	declare _rating smallint;
+
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		rollback;
+		resignal;
+	END;
+
+	start transaction;
+
+	IF ratings IS NULL THEN
+    		SET ratings = '';
+  	END IF;
+
+
+
+	ratingsLoop:
+  		LOOP
+		set currentRating = SUBSTRING_INDEX(ratings, ':', 1);
+
+		IF currentRating = '' THEN
+      			LEAVE ratingsLoop;
+   		 END IF;
+		
+		set _detailId = CAST(SUBSTRING_INDEX(currentRating, ',', 1) as unsigned);
+    		SET currentRatingsSubStrLen = CHAR_LENGTH(SUBSTRING_INDEX(currentRating, ',', 1)) + 2;
+    		SET currentRating = MID(currentRating, currentRatingsSubStrLen);
+	
+		set _paramId = CAST(SUBSTRING_INDEX(currentRating, ',', 1) as unsigned);
+    		SET currentRatingsSubStrLen = CHAR_LENGTH(SUBSTRING_INDEX(currentRating, ',', 1)) + 2;
+    		SET currentRating = MID(currentRating, currentRatingsSubStrLen);
+
+		set _rating = CAST(currentRating as unsigned);
 
 		delete from rating where paramId = _paramId and detailId=_detailId;
 
    		INSERT INTO rating(detailId, paramId, rating)
-	    	VALUES(_detailId, _paramId, rating);
-	    	
+	    	VALUES(_detailId, _paramId, _rating);
+
+    		SET ratingsSubStrLen = CHAR_LENGTH(SUBSTRING_INDEX(ratings, ':', 1)) + 2;
+    		SET ratings = MID(ratings, ratingsSubStrLen);
+
+    		IF ratings = '' THEN
+      			LEAVE ratingsLoop;
+   		 END IF;
+  
+  	END LOOP ratingsLoop;
+
+	commit;
+
 	    Select p.creator, dr.friendCreated
 	    from parameters as p, dataRequests as dr, dataRequestsDetails as drd
 	    where dr.requestId = drd.requestId and
 	    drd.detailId = _detailId and
 	    p.id = _paramId;
-	    
+
+
 end//
 delimiter;
+

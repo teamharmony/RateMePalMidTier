@@ -77,8 +77,8 @@ public class RequestServiceImpl implements RequestService {
 	}
 	
 
-	private int getDataRequestId(int requestId) throws ResourceError {
-		Map<String, Object> out = null;
+	private List<DataRequest> getDataRequestDetailId(final int requestId) throws ResourceError {
+/*		Map<String, Object> out = null;
 		try {
 			SimpleJdbcCall getDetailId = new SimpleJdbcCall(
 					dataSource).withProcedureName("getDetailId");
@@ -93,12 +93,46 @@ public class RequestServiceImpl implements RequestService {
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
 		}
+*/
+		Map<String, Integer> params = new HashMap<String, Integer>();
+		params.put("requestid", requestId);
 		
-		return (Integer)out.get("detailid");
+		SqlParameterSource in  = new MapSqlParameterSource().addValues(params);
+		Map<String, Object> out = null;
+		try {
+			SimpleJdbcCall getRequests = new SimpleJdbcCall(dataSource)
+					.withProcedureName("getDetailId").returningResultSet("rs1",
+							new RowMapper<DataRequest>() {
+								public DataRequest mapRow(ResultSet rs,
+										int rowCount) throws SQLException {
+									int detailId = rs.getInt("detailId");
+									int paramId = rs.getInt("paramId");
+									
+									DataRequest d = new DataRequest();
+									d.setRequestId(requestId);
+									d.setDetailId(detailId);
+									
+									Parameter p = new Parameter();
+									p.setId(paramId);
+									
+									Parameter[] pArray = new Parameter[1]; 
+									pArray[0] = p;
+									d.setParamIds(pArray);
+						
+									return d;
+								}
+							});
+			out = getRequests.execute(in);
+		} catch (DataAccessException e) {
+			handleDataAcessException(e);
+		}
+		return (List<DataRequest>) out.get("rs1");
+	
+		
 	}
 
 	
-	public int addDataRequest(DataRequest request) throws ResourceError {
+	public List<DataRequest> addDataRequest(DataRequest request) throws ResourceError {
 		int requestId = -99;
 		try {
 
@@ -134,11 +168,8 @@ public class RequestServiceImpl implements RequestService {
 			handleDataAcessException(e);
 		}
 		
-		if(request.getDetailId() == 1) {
-			return this.getDataRequestId(requestId);
-		}
+		return this.getDataRequestDetailId(requestId);
 		
-		return requestId;
 	}
 
 	public List<DataRequest> getRatingRequestsByUser(String username)

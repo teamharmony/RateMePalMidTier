@@ -49,7 +49,7 @@ public class RatingController {
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Rating> rateAParam(@RequestBody Rating rating, 
+	public ResponseEntity<Rating> rateAParam(@RequestBody List<Rating> rating, 
 			HttpServletRequest request) throws ResourceError {
 		
 		DataRequest d = ratingService.rateAParam(rating);

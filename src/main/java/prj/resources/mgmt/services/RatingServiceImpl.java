@@ -139,7 +139,7 @@ public class RatingServiceImpl implements RatingService {
 	}
 
 
-	public DataRequest rateAParam(Rating rating) throws ResourceError {
+	public DataRequest rateAParam(List<Rating> ratingList) throws ResourceError {
 		/*Map<String, Object> out = null;
 		try {
 			SimpleJdbcCall rateAParam = new SimpleJdbcCall(
@@ -158,12 +158,21 @@ public class RatingServiceImpl implements RatingService {
 			handleDataAcessException(e);
 		}
 		*/
-
+		String ratings = "";
+		
+		for(Rating r: ratingList) {
+			int detailId = r.getDetailId();
+			int paramId = r.getParamId();
+			int rating = r.getRating();
+			
+			ratings += detailId + "," + paramId + "," + rating;
+			ratings += ":";
+		}
+		ratings = ratings.substring(0, ratings.length() -1);
+		
 		Map<String, Object> inputData = new HashMap<String, Object>();
-		inputData.put("_paramId", rating.getParamId());
-		inputData.put("_detailId", rating.getDetailId());
-		inputData.put("rating", rating.getRating());
-
+		inputData.put("ratings", ratings);
+		
 		Map<String, Object> out = null;
 		try {
 			SimpleJdbcCall rateAParam = new SimpleJdbcCall(dataSource)
