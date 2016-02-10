@@ -490,14 +490,14 @@ drop procedure getDetailId;
 delimiter //
 CREATE PROCEDURE getDetailId
      (
-	IN requestid int
+	IN _requestId int
      )
 BEGIN
 select paramId, detailId  from dataRequestsDetails
-where requestId = requestid;
+where requestId = _requestId;
 
 end//
-delimiter;
+delimiter ;
 
 
 drop procedure addDataRequest;
@@ -612,7 +612,8 @@ CREATE PROCEDURE getRatingRequestsByUser
 BEGIN 
 
 select dr.requestId, dr.requestName, dr.friendCreated,
-		drd.detailId, drd.paramId, p.name as paramName, p.text as paramText, u.name as displayName, u.designation as designation
+		drd.detailId, drd.paramId, p.name as paramName, p.text as paramText, p.type as paramType,
+		u.name as displayName, u.designation as designation, u.description as description, u.username as username
 from dataRequests as dr, dataRequestsDetails as drd, user_details as u, parameters as p
 where dr.requestId  = drd.requestId and
 p.id = drd.paramId and
@@ -622,7 +623,7 @@ order by dr.creationTime desc;
 
 
 end//
-delimiter;
+delimiter ;
 
 
 drop procedure getRatingRequestsToUser;
@@ -634,7 +635,8 @@ CREATE PROCEDURE getRatingRequestsToUser
 BEGIN 
 
 select dr.requestId, dr.requestName, dr.friendCreated,
-		drd.detailId, drd.paramId, p.name as paramName, p.text as paramText, u.name as displayName, u.designation as designation
+		drd.detailId, drd.paramId, p.name as paramName, p.text as paramText, p.type as paramType,
+		u.name as displayName, u.designation as designation, u.description as description, u.username as username
 from dataRequests as dr, dataRequestsDetails as drd, user_details as u, parameters as p
 where dr.requestId  = drd.requestId and
 p.id = drd.paramId and
@@ -643,7 +645,7 @@ drd.friend = user
 order by dr.creationTime desc;
 
 end//
-delimiter;
+delimiter ;
 
 
 
