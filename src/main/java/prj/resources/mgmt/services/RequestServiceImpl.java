@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import prj.resources.exception.ResourceError;
 import prj.resources.mgmt.domain.DataRequest;
 import prj.resources.mgmt.domain.Parameter;
+import prj.resources.mgmt.domain.ParameterType;
 import prj.resources.mgmt.domain.User;
 
 public class RequestServiceImpl implements RequestService {
@@ -95,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
 		}
 */
 		Map<String, Integer> params = new HashMap<String, Integer>();
-		params.put("requestid", requestId);
+		params.put("_requestId", requestId);
 		
 		SqlParameterSource in  = new MapSqlParameterSource().addValues(params);
 		Map<String, Object> out = null;
@@ -207,8 +208,11 @@ public class RequestServiceImpl implements RequestService {
 									int paramId = rs.getInt("paramId");
 									String paramName = rs.getString("paramName");
 									String paramText = rs.getString("paramText");
+									int paramType = rs.getInt("paramType");
 									String displayName = rs.getString("displayName");
 									String designation = rs.getString("designation");
+									String description = rs.getString("description");
+									String userName = rs.getString("username");
 									
 									DataRequest d = new DataRequest();
 									d.setRequestId(requestId);
@@ -220,8 +224,11 @@ public class RequestServiceImpl implements RequestService {
 									p.setId(paramId);
 									p.setName(paramName);
 									p.setText(paramText);
+									p.setType(ParameterType.valueOf(paramType));
 									
-									User u = new User.UserBuilder().name(displayName).designation(designation).build();
+									User u = new User.UserBuilder().name(displayName)
+											.designation(designation).userName(userName)
+											.description(description).build();
 									
 									Parameter[] pArray = new Parameter[1]; 
 									pArray[0] = p;
