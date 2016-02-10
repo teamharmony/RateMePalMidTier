@@ -60,7 +60,7 @@ public class DataRequestController {
 		
 		if(dataRequest.getFriendCreated() == 0) {
 			String template = request.getParameter("username") + " sent you a rating request.";
-			NotificationsUtil.sendNotification(template, usernames);
+			NotificationsUtil.sendNotification(template, usernames, "DATAREQUEST");
 		}
 		
 		return new ResponseEntity<List<DataRequest>>(detailIds, HttpStatus.CREATED);

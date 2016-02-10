@@ -23,7 +23,7 @@ public class NotificationsUtil {
 	  private static final String APPLICATION_CODE = "PW_APPLICATION_CODE";
 	  private static final String USERNAME_TAG = "username";
 	  
-	  public static void sendNotification(String content, String[] data) {
+	  public static void sendNotification(String content, String[] users, String data) {
 		    String method = "createMessage";
 	        URL url = null;
 			try {
@@ -37,16 +37,21 @@ public class NotificationsUtil {
 	        
 	        ArrayNode conditions =  mapper.createArrayNode();
 	       
-	        for(String d: data) {
+	        for(String d: users) {
 	        	ArrayNode usernameCondition =  mapper.createArrayNode().add(USERNAME_TAG).add("EQ").add(d);
 	        	conditions.add(usernameCondition);
 	        }
-	        		
+	        
+	        ObjectNode dataNode =  mapper.createObjectNode();
+	        dataNode.put("about", data);
+	        
+	        
 	        ObjectNode notifications =  mapper.createObjectNode();
 	        
 	        notifications.put("send_date", "now");
 	        notifications.put("content", content);
 	        notifications.put("conditions", conditions);
+	        notifications.put("data", dataNode);
 	        
 	        ArrayNode notificationsArray = mapper.createArrayNode().add(notifications);
 	        

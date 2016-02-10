@@ -68,7 +68,7 @@ public class FriendsController {
 		
 		String template = "You have a friend request from " +  fromName + "!";
 		
-		NotificationsUtil.sendNotification(template, new String[] {creator});
+		NotificationsUtil.sendNotification(template, new String[] {creator}, "FRIEND");
 			
 	}
 	
@@ -120,11 +120,11 @@ public class FriendsController {
 		
 		if(status == 2) {
 			template = "Congrats! " +  fromName + " accepted your friend request.";
+			NotificationsUtil.sendNotification(template, new String[] {friendname}, "FRIEND_ACCEPTED");
 		} else if(status == 3) {
 			template = fromName + " did not accept your friend request.";
+			NotificationsUtil.sendNotification(template, new String[] {friendname}, "FRIEND_REJECTED");
 		}
 		 
-		NotificationsUtil.sendNotification(template, new String[] {friendname});
-		
 	}	
 }

@@ -58,11 +58,13 @@ public class RatingController {
 		
 		if(d.getFriendCreated() == 0) {
 			template = "Congrats! You received a rating response from " + request.getParameter("username");
+			NotificationsUtil.sendNotification(template, new String[]{d.getFriends()[0].getUsername()}, "RATING_RESPONSE");
 		} else {
 			template = "Congrats! You received a rating from " + request.getParameter("username");
+			NotificationsUtil.sendNotification(template, new String[]{d.getFriends()[0].getUsername()}, "RATING");
 		}
 		
-		NotificationsUtil.sendNotification(template, new String[]{d.getFriends()[0].getUsername()});
+		
 		
 		return new ResponseEntity<Rating>(HttpStatus.CREATED);
 	}
