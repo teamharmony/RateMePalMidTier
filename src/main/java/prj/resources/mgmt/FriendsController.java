@@ -68,7 +68,7 @@ public class FriendsController {
 		
 		String template = "You have a friend request from " +  fromName + "!";
 		
-		NotificationsUtil.sendNotification(template, new String[] {creator}, "FRIEND");
+		NotificationsUtil.sendNotification(template, new String[] {friendUserName}, "FRIEND");
 			
 	}
 	
