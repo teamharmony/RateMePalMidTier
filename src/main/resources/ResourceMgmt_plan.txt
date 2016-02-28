@@ -431,9 +431,9 @@ delimiter ;
 
 drop procedure getUserProfilePic;
 delimiter //
-create procedure getUserProfilePic(IN _username varchar(12))
+create procedure getUserProfilePic(IN _username varchar(60))
 begin 
-	select profilePic
+	select profilePic 
 		from user_details
 			where username = _username;
 end//

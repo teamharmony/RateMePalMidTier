@@ -63,7 +63,7 @@ public class SearchController {
 	 */
 	@ResponseBody
 	@RequestMapping(value="/nonFriends", method = RequestMethod.GET)
-	public List<User> findNonFriendByName(@RequestParam(required = true, value = "searcKey") String searchString, HttpServletRequest request) throws ResourceError{
+	public List<User> findNonFriendByName(@RequestParam(required = true, value = "searchKey") String searchString, HttpServletRequest request) throws ResourceError{
 		return  friendsService.searchNonFriends(new User.UserBuilder().name(request.getParameter("username")).build(), searchString);
 	}
 
