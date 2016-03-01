@@ -80,8 +80,10 @@ public class RatingServiceImpl implements RatingService {
 										int rowCount) throws SQLException {
 									int paramId = rs.getInt("paramId");
 									int avgRating = rs.getInt("rating");
+									int count = rs.getInt("count");
 									
 									Rating r = new Rating();
+									r.setCount(count);
 									r.setParamId(paramId);
 									r.setRating(avgRating);
 									return r;

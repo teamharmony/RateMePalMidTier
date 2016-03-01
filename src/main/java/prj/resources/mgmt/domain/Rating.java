@@ -5,7 +5,16 @@ public class Rating {
 	private int detailId;
 	private int paramId;
 	private int rating;
+	private int count;
 	
+	
+	
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
+	}
 	public int getRatingId() {
 		return ratingId;
 	}

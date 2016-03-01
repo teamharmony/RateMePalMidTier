@@ -656,7 +656,7 @@ CREATE PROCEDURE getRatingAverage
         IN  paramList VARCHAR(5000)
      )
 BEGIN 
-		set @sql = concat('select paramId, avg(rating) as rating from rating where paramId IN (', paramList , ') group by paramId');
+		set @sql = concat('select paramId, count(*) as count, avg(rating) as rating from rating where paramId IN (', paramList , ') group by paramId');
 		
 		PREPARE stmt1 FROM @sql;
 
