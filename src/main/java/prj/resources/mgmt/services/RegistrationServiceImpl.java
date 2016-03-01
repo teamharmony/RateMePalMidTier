@@ -150,19 +150,28 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	public byte[] getProfilePic(String userName) throws ResourceError {
+		String procName = "getUserProfilePic";
 		Map<String, Object> out = null;
 		try {
-			SimpleJdbcCall getUserDetailsJdbcCall = new SimpleJdbcCall(
-					dataSource).withProcedureName("getUserProfilePic");
+				SimpleJdbcCall getUserProfilePic = new SimpleJdbcCall(dataSource)
+					.withProcedureName(procName).returningResultSet("rs1",
+							new RowMapper<byte[]>() {
+								public byte[] mapRow(ResultSet rs, int rowCount)
+										throws SQLException {
+																		
+									return rs.getBytes("profilePic");
+									
+								}
+							});
 
-			SqlParameterSource in = new MapSqlParameterSource().addValue(
-					"_username", userName);
-			out = getUserDetailsJdbcCall.execute(in);
+			SqlParameterSource in = new MapSqlParameterSource().addValue("_username", 	userName);
+
+			out = getUserProfilePic.execute(in);
 		} catch (DataAccessException e) {
 			handleDataAcessException(e);
 		}
-		
-		return (byte[]) out.get("profilepic");
+        List images = (List)out.get("rs1");
+        return images.size() <= 0 ? null : (byte[])images.get(0);
 	}
 	
 	public void updatePwd(String userName, String pwd, int reset) throws ResourceError {
