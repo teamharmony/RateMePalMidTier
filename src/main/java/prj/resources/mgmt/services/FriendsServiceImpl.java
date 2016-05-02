@@ -114,11 +114,7 @@ public class FriendsServiceImpl  implements FriendsService{
 								public User mapRow(ResultSet rs,
 										int rowCount) throws SQLException {
 									User u = null;
-									if(procName.equals("showNonFriends")){
-										u = new User.UserBuilder().name(rs.getString("displayName")).userName(rs.getString("userName")).description(rs.getString("description")).designation(rs.getString("designation")).status(rs.getString("status")).build();
-									} else {
-										u = new User.UserBuilder().name(rs.getString("displayName")).userName(rs.getString("userName")).description(rs.getString("description")).designation(rs.getString("designation")).build();
-									}
+									u = new User.UserBuilder().name(rs.getString("displayName")).userName(rs.getString("userName")).description(rs.getString("description")).designation(rs.getString("designation")).status(rs.getString("status")).build();
 									return u;
 								}
 							});
